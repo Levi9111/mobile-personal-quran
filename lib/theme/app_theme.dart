@@ -44,7 +44,7 @@ class AppTheme {
         onSurface: darkForeground,
         outline: darkBorder,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -95,7 +95,7 @@ class AppTheme {
         onSurface: lightForeground,
         outline: lightBorder,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
