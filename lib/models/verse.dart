@@ -6,6 +6,8 @@ class Verse {
   final String translationText;
   final String? audioUrl;
 
+  String get verse_key => verseKey;
+
   Verse({
     required this.id,
     required this.verseNumber,

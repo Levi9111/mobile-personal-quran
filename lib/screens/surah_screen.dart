@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
 import '../services/quran_service.dart';
@@ -84,7 +83,7 @@ class _SurahScreenState extends State<SurahScreen> {
               });
             },
             icon: Icon(
-              _tajweedEnabled ? LucideIcons.eye : LucideIcons.eyeOff,
+              _tajweedEnabled ? Icons.remove_red_eye_outlined : Icons.visibility_off_outlined,
               size: 16,
               color: theme.colorScheme.primary,
             ),
@@ -254,8 +253,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                 OutlinedButton.icon(
                                   onPressed: () => _toggleAudio(verse.verse_key, verse.audioUrl),
                                   icon: Icon(
-                                    isPlaying ? LucideIcons.pause : LucideIcons.play,
-                                    size: 14,
+                                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                    size: 16,
                                   ),
                                   label: Text(isPlaying ? 'Pause' : 'Play'),
                                   style: OutlinedButton.styleFrom(

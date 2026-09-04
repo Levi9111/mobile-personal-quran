@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../models/chapter.dart';
 import '../providers/theme_provider.dart';
 import '../services/quran_service.dart';
@@ -79,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               child: const Icon(
-                LucideIcons.bookOpen,
+                Icons.menu_book_rounded,
                 size: 18,
                 color: AppTheme.primaryEmerald,
               ),
@@ -112,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              isDark ? LucideIcons.sun : LucideIcons.moon,
+              isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
               color: isDark ? AppTheme.metallicGold : AppTheme.primaryTealLight,
             ),
             onPressed: () => themeProvider.toggleTheme(),
@@ -137,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(LucideIcons.alertCircle, size: 48, color: Colors.redAccent),
+                    const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
                     const SizedBox(height: 12),
                     Text(
                       'Failed to load Quran surahs',
@@ -203,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        icon: const Icon(LucideIcons.sparkles, size: 16, color: AppTheme.metallicGold),
+                        icon: const Icon(Icons.auto_awesome_rounded, size: 16, color: AppTheme.metallicGold),
                         label: const Text('Colour-coded tajweed guide →'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: theme.colorScheme.primary,
@@ -221,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         controller: _searchController,
                         decoration: InputDecoration(
                           hintText: 'Search surah by name or number…',
-                          prefixIcon: const Icon(LucideIcons.search, size: 18),
+                          prefixIcon: const Icon(Icons.search_rounded, size: 18),
                           filled: true,
                           fillColor: theme.cardTheme.color,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
