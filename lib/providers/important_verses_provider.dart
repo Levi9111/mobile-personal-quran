@@ -84,7 +84,14 @@ class ImportantVersesProvider extends ChangeNotifier {
     return note != null && note.trim().isNotEmpty;
   }
 
-  Future<void> loadData() async {
+  Future<void>? _loadFuture;
+
+  Future<void> loadData() {
+    _loadFuture ??= _performLoadData();
+    return _loadFuture!;
+  }
+
+  Future<void> _performLoadData() async {
     _isLoading = true;
     notifyListeners();
 
@@ -193,4 +200,7 @@ class ImportantVersesProvider extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> removePersonalNote(String verseKey) => deletePersonalNote(verseKey);
+  Future<void> loadVerses() => loadData();
 }

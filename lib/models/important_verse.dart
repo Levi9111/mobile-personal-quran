@@ -33,23 +33,23 @@ class ImportantVerse {
 
   factory ImportantVerse.fromJson(Map<String, dynamic> json) {
     return ImportantVerse(
-      id: json['id'] as int,
-      title: json['title'] as String? ?? '',
-      surahNumber: json['surahNumber'] as int,
-      surahName: json['surahName'] as String? ?? '',
-      verseNumber: json['verseNumber'] as int,
-      verseKey: json['verseKey'] as String? ?? '',
-      textIndopak: json['textIndopak'] as String? ?? '',
-      translation: json['translation'] as String? ?? '',
-      category: json['category'] as String? ?? '',
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      title: (json['title'] ?? '').toString(),
+      surahNumber: (json['surahNumber'] ?? json['surah_number'] as num?)?.toInt() ?? 0,
+      surahName: (json['surahName'] ?? json['surah_name'] ?? '').toString(),
+      verseNumber: (json['verseNumber'] ?? json['verse_number'] as num?)?.toInt() ?? 0,
+      verseKey: (json['verseKey'] ?? json['verse_key'] ?? '').toString(),
+      textIndopak: (json['textIndopak'] ?? json['text_indopak'] ?? '').toString(),
+      translation: (json['translation'] ?? '').toString(),
+      category: (json['category'] ?? '').toString(),
       occasions: (json['occasions'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      significance: json['significance'] as String? ?? '',
-      blessings: json['blessings'] as String? ?? '',
-      reference: json['reference'] as String? ?? '',
-      audioUrl: json['audioUrl'] as String?,
+      significance: (json['significance'] ?? '').toString(),
+      blessings: (json['blessings'] ?? '').toString(),
+      reference: (json['reference'] ?? '').toString(),
+      audioUrl: json['audioUrl']?.toString() ?? json['audio_url']?.toString(),
     );
   }
 
