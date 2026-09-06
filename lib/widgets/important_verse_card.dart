@@ -8,6 +8,7 @@ import '../providers/important_verses_provider.dart';
 import '../screens/surah_screen.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/arabic_numerals.dart';
 import 'tajweed_text.dart';
 
 class ImportantVerseCard extends StatefulWidget {
@@ -301,7 +302,13 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     ),
                   ),
                   child: Text(
-                    '${widget.verse.surahName} ${widget.verse.verseKey}',
+                    () {
+                      final parts = widget.verse.verseKey.split(':');
+                      if (parts.length == 2) {
+                        return '${widget.verse.surahName} ${ArabicNumeralHelper.formatDual(parts[0], parts[1])}';
+                      }
+                      return '${widget.verse.surahName} ${widget.verse.verseKey}';
+                    }(),
                     style: GoogleFonts.karla(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,

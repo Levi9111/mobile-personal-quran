@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:provider/provider.dart';
+import '../models/bookmark.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
+import '../providers/bookmark_provider.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/arabic_numerals.dart';
+import '../widgets/bookmark_sheet.dart';
+import '../widgets/celestial_notification_banner.dart';
 import '../widgets/tajweed_legend.dart';
 import '../widgets/tajweed_text.dart';
 
 class SurahScreen extends StatefulWidget {
   final Chapter chapter;
+  final int? initialVerseNumber;
 
-  const SurahScreen({super.key, required this.chapter});
+  const SurahScreen({
+    super.key,
+    required this.chapter,
+    this.initialVerseNumber,
+  });
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -22,6 +33,8 @@ class _SurahScreenState extends State<SurahScreen> {
   bool _tajweedEnabled = true;
   String? _playingVerseKey;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final ScrollController _scrollController = ScrollController();
+  bool _hasAutoScrolled = false;
 
   static const String bismillahText = "بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ";
 
@@ -40,6 +53,7 @@ class _SurahScreenState extends State<SurahScreen> {
   void dispose() {
     _audioPlayer.stop();
     _audioPlayer.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -61,10 +75,36 @@ class _SurahScreenState extends State<SurahScreen> {
     }
   }
 
+  void _scrollToInitialVerse(List<Verse> verses) {
+    if (_hasAutoScrolled || widget.initialVerseNumber == null) return;
+    _hasAutoScrolled = true;
+
+    final targetIndex = verses.indexWhere(
+      (v) => v.verseNumber == widget.initialVerseNumber,
+    );
+
+    if (targetIndex > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Approximate verse height estimation for smooth scroll
+        final targetOffset = (targetIndex * 240.0).clamp(
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        );
+        _scrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final chapter = widget.chapter;
+    final isDark = theme.brightness == Brightness.dark;
+    final bookmarkProvider = Provider.of<BookmarkProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -76,6 +116,14 @@ class _SurahScreenState extends State<SurahScreen> {
           ),
         ),
         actions: [
+          // Bookmark Sheet action
+          IconButton(
+            icon: const Icon(Icons.bookmarks_rounded, size: 20),
+            color: AppTheme.celestialStarGold,
+            tooltip: 'View Bookmarks',
+            onPressed: () => BookmarkSheet.show(context),
+          ),
+          // Tajweed Colors Toggle
           TextButton.icon(
             onPressed: () {
               setState(() {
@@ -117,111 +165,126 @@ class _SurahScreenState extends State<SurahScreen> {
           }
 
           final verses = snapshot.data ?? [];
-
-          final isDark = theme.brightness == Brightness.dark;
+          _scrollToInitialVerse(verses);
 
           return CustomScrollView(
+            controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Celestial Surah Header Banner
+              // Celestial Surah Header Banner with image texture
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-                        decoration: BoxDecoration(
-                          gradient: isDark
-                              ? const LinearGradient(
-                                  colors: [
-                                    Color(0xFF131F3A),
-                                    Color(0xFF0F172A),
-                                    Color(0xFF080D1A),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                )
-                              : const LinearGradient(
-                                  colors: [
-                                    Color(0xFFFFFFFF),
-                                    Color(0xFFF1F6FE),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(
-                            color: isDark
-                                ? AppTheme.celestialStarGold.withOpacity(0.4)
-                                : const Color(0xFFD6E2F0),
-                            width: 1.2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isDark
-                                  ? const Color(0xFF020617).withOpacity(0.4)
-                                  : const Color(0xFF94A3B8).withOpacity(0.12),
-                              blurRadius: 18,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Column(
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Stack(
                           children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.auto_awesome,
-                                  size: 12,
-                                  color: AppTheme.celestialStarGold,
+                            // Atmospheric subtle stars and clouds image
+                            Positioned.fill(
+                              child: Opacity(
+                                opacity: isDark ? 0.25 : 0.12,
+                                child: Image.asset(
+                                  'assets/images/celestial_stars.jpg',
+                                  fit: BoxFit.cover,
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'SURAH ${chapter.id}',
-                                  style: GoogleFonts.karla(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 3,
-                                    color: isDark
-                                        ? AppTheme.celestialStarGold
-                                        : const Color(0xFF1E3A8A),
+                              ),
+                            ),
+
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                              decoration: BoxDecoration(
+                                gradient: isDark
+                                    ? LinearGradient(
+                                        colors: [
+                                          const Color(0xFF131F3A).withOpacity(0.92),
+                                          const Color(0xFF0F172A).withOpacity(0.92),
+                                          const Color(0xFF080D1A).withOpacity(0.95),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      )
+                                    : LinearGradient(
+                                        colors: [
+                                          Colors.white.withOpacity(0.95),
+                                          const Color(0xFFF1F6FE).withOpacity(0.95),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isDark
+                                      ? AppTheme.celestialStarGold.withOpacity(0.5)
+                                      : const Color(0xFFD6E2F0),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  // Glowing anime logo emblem
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          AppTheme.celestialStarGold,
+                                          AppTheme.celestialStarlightBlue,
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppTheme.celestialStarGold.withOpacity(0.35),
+                                          blurRadius: 14,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppTheme.celestialMidnight,
+                                      ),
+                                      padding: const EdgeInsets.all(2),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/images/noor_logo.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.auto_awesome,
-                                  size: 12,
-                                  color: AppTheme.celestialStarGold,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              chapter.nameArabic,
-                              style: GoogleFonts.scheherazadeNew(
-                                fontSize: 40,
-                                color: isDark
-                                    ? AppTheme.celestialStarGold
-                                    : const Color(0xFF1E3A8A),
-                              ),
-                            ),
-                            Text(
-                              chapter.nameSimple,
-                              style: GoogleFonts.cormorantGaramond(
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${chapter.translatedName} · ${chapter.versesCount} ayahs · ${chapter.revelationPlace}',
-                              style: GoogleFonts.karla(
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurface.withOpacity(0.65),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    chapter.nameArabic,
+                                    style: GoogleFonts.scheherazadeNew(
+                                      fontSize: 40,
+                                      color: isDark
+                                          ? AppTheme.celestialStarGold
+                                          : const Color(0xFF1E3A8A),
+                                    ),
+                                  ),
+                                  Text(
+                                    chapter.nameSimple,
+                                    style: GoogleFonts.cormorantGaramond(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${chapter.translatedName} · ${chapter.versesCount} ayahs · ${chapter.revelationPlace}',
+                                    style: GoogleFonts.karla(
+                                      fontSize: 12,
+                                      color: theme.colorScheme.onSurface.withOpacity(0.65),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -251,6 +314,9 @@ class _SurahScreenState extends State<SurahScreen> {
                     (context, index) {
                       final verse = verses[index];
                       final isPlaying = _playingVerseKey == verse.verse_key;
+                      final isBookmarked = bookmarkProvider.isBookmarked(chapter.id, verse.verseNumber);
+                      final isLastRead = bookmarkProvider.lastReadBookmark?.surahId == chapter.id &&
+                          bookmarkProvider.lastReadBookmark?.verseNumber == verse.verseNumber;
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -263,18 +329,18 @@ class _SurahScreenState extends State<SurahScreen> {
                               : theme.cardTheme.color,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: isPlaying
+                            color: isPlaying || isLastRead
                                 ? AppTheme.celestialStarGold
                                 : (isDark
                                     ? AppTheme.celestialBorderIndigo
                                     : AppTheme.lightBorder),
-                            width: isPlaying ? 1.5 : 1,
+                            width: (isPlaying || isLastRead) ? 1.5 : 1,
                           ),
-                          boxShadow: isPlaying
+                          boxShadow: (isPlaying || isLastRead)
                               ? [
                                   BoxShadow(
-                                    color: AppTheme.celestialStarGold.withOpacity(0.25),
-                                    blurRadius: 16,
+                                    color: AppTheme.celestialStarGold.withOpacity(0.2),
+                                    blurRadius: 14,
                                     spreadRadius: 1,
                                   ),
                                 ]
@@ -283,12 +349,15 @@ class _SurahScreenState extends State<SurahScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            // Arabic Verse Text
                             TajweedTextWidget(
                               text: verse.textIndopak,
                               enabled: _tajweedEnabled,
                               fontSize: 26,
                             ),
                             const SizedBox(height: 14),
+
+                            // Translation Text
                             Text(
                               verse.translationText,
                               style: GoogleFonts.karla(
@@ -298,10 +367,13 @@ class _SurahScreenState extends State<SurahScreen> {
                               ),
                             ),
                             const SizedBox(height: 14),
+
+                            // Action and Info Row
                             Row(
                               children: [
+                                // Dual English & Arabic Number Badge: [chapter]:[verse] • [سورة]:[آية]
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                                   decoration: BoxDecoration(
                                     color: isDark
                                         ? AppTheme.celestialStarGold.withOpacity(0.12)
@@ -314,18 +386,87 @@ class _SurahScreenState extends State<SurahScreen> {
                                       width: 1,
                                     ),
                                   ),
-                                  child: Text(
-                                    '${chapter.id}:${verse.verseNumber}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? AppTheme.celestialStarGold
-                                          : const Color(0xFF1E3A8A),
-                                    ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        ArabicNumeralHelper.formatDual(chapter.id, verse.verseNumber),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark
+                                              ? AppTheme.celestialStarGold
+                                              : const Color(0xFF1E3A8A),
+                                        ),
+                                      ),
+                                      if (isLastRead) ...[
+                                        const SizedBox(width: 6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.celestialStarGold,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            'LAST READ',
+                                            style: GoogleFonts.karla(
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppTheme.celestialMidnight,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ),
                                 const Spacer(),
+
+                                // Bookmark Button
+                                IconButton(
+                                  icon: Icon(
+                                    (isBookmarked || isLastRead)
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_border_rounded,
+                                    size: 22,
+                                    color: (isBookmarked || isLastRead)
+                                        ? AppTheme.celestialStarGold
+                                        : theme.colorScheme.onSurface.withOpacity(0.4),
+                                  ),
+                                  tooltip: 'Save Bookmark for Today',
+                                  onPressed: () async {
+                                    final bookmark = Bookmark(
+                                      id: '${chapter.id}:${verse.verseNumber}',
+                                      surahId: chapter.id,
+                                      surahNameSimple: chapter.nameSimple,
+                                      surahNameArabic: chapter.nameArabic,
+                                      verseNumber: verse.verseNumber,
+                                      verseKey: verse.verse_key,
+                                      arabicText: verse.textIndopak,
+                                      translationText: verse.translationText,
+                                      timestamp: DateTime.now(),
+                                    );
+
+                                    final added = await bookmarkProvider.toggleBookmark(bookmark);
+
+                                    if (context.mounted) {
+                                      CelestialNotificationBanner.show(
+                                        context: context,
+                                        title: added ? 'Bookmark Saved • تَمَّ الْحِفْظ' : 'Bookmark Removed',
+                                        message: added
+                                            ? 'Surah ${chapter.nameSimple} marked as your spot for today.'
+                                            : 'Removed from bookmarks.',
+                                        verseReference: ArabicNumeralHelper.formatDual(chapter.id, verse.verseNumber),
+                                        type: NotificationType.bookmarkSaved,
+                                        duration: const Duration(seconds: 4),
+                                      );
+                                    }
+                                  },
+                                ),
+
+                                const SizedBox(width: 4),
+
+                                // Audio Play/Pause Button
                                 OutlinedButton.icon(
                                   onPressed: () => _toggleAudio(verse.verse_key, verse.audioUrl),
                                   icon: Icon(
@@ -351,7 +492,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
                                       width: 1.2,
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
