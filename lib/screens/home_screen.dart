@@ -5,6 +5,7 @@ import '../models/chapter.dart';
 import '../providers/theme_provider.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import 'important_verses_screen.dart';
 import 'surah_screen.dart';
 import 'tajweed_guide_screen.dart';
 
@@ -117,6 +118,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.stars_rounded, color: AppTheme.metallicGold),
+            tooltip: 'Important Verses & Duas',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ImportantVersesScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(
               isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
               color: isDark ? AppTheme.metallicGold : AppTheme.primaryTealLight,
@@ -206,27 +219,54 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const TajweedGuideScreen(),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ImportantVersesScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.stars_rounded, size: 16, color: AppTheme.metallicGold),
+                            label: const Text('Important Verses & Duas'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                             ),
-                          );
-                        },
-                        icon: const Icon(Icons.auto_awesome_rounded, size: 16, color: AppTheme.metallicGold),
-                        label: const Text('Colour-coded tajweed guide →'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: theme.colorScheme.primary,
-                          side: BorderSide(
-                            color: AppTheme.metallicGold.withOpacity(0.5),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const TajweedGuideScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.auto_awesome_rounded, size: 16, color: AppTheme.metallicGold),
+                            label: const Text('Tajweed guide →'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: theme.colorScheme.primary,
+                              side: BorderSide(
+                                color: AppTheme.metallicGold.withOpacity(0.5),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       TextField(
