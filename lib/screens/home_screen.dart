@@ -24,15 +24,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _chaptersFuture = QuranService.fetchChapters().then((chapters) {
-      setState(() {
-        _allChapters = chapters;
-        _filteredChapters = chapters;
-      });
-      return chapters;
-    });
-
+    _loadChapters();
     _searchController.addListener(_onSearchChanged);
+  }
+
+  void _loadChapters() {
+    setState(() {
+      _chaptersFuture = QuranService.fetchChapters().then((chapters) {
+        if (mounted) {
+          setState(() {
+            _allChapters = chapters;
+            _filteredChapters = chapters;
+          });
+        }
+        return chapters;
+      });
+    });
   }
 
   @override
@@ -143,13 +150,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _chaptersFuture = QuranService.fetchChapters();
-                        });
-                      },
-                      child: const Text('Retry'),
+                    Text(
+                      '${snapshot.error}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _loadChapters,
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('Retry'),
                     ),
                   ],
                 ),
