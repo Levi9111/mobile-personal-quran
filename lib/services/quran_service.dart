@@ -85,32 +85,62 @@ class QuranService {
   }
 
   static Future<List<Verse>> fetchVerses(int chapterId) async {
-    final translationIds = ['131', '20'];
+    // 1. Try network with primary translation: 20 (Saheeh International, identical to web app)
+    final translationIds = ['20', '131'];
 
     for (final transId in translationIds) {
       try {
         final url =
-            '$baseUrl/verses/by_chapter/$chapterId?language=en&words=false&translations=$transId&fields=text_indopak&audio=7&per_page=300';
+            '$baseUrl/verses/by_chapter/$chapterId?translations=$transId&fields=text_indopak&audio=7&per_page=300';
         final response = await http
             .get(
               Uri.parse(url),
               headers: headers,
             )
-            .timeout(const Duration(seconds: 10));
+            .timeout(const Duration(seconds: 12));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
           final versesList = data['verses'] as List<dynamic>;
-          return versesList
+          final verses = versesList
               .map((json) => Verse.fromJson(json as Map<String, dynamic>))
               .toList();
+
+          if (verses.isNotEmpty && verses.any((v) => v.translationText.isNotEmpty)) {
+            await _cacheVerses(chapterId, response.body);
+            return verses;
+          }
         }
       } catch (e) {
         debugPrint('QuranService: Verse fetch error for trans $transId: $e');
       }
     }
 
+    // 2. Offline fallback: check SharedPreferences cache
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString('cached_verses_$chapterId');
+      if (cachedJson != null && cachedJson.isNotEmpty) {
+        final data = jsonDecode(cachedJson) as Map<String, dynamic>;
+        final versesList = data['verses'] as List<dynamic>;
+        return versesList
+            .map((json) => Verse.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('QuranService: Cache load failed for surah $chapterId: $e');
+    }
+
     throw Exception('Failed to load verses for surah $chapterId. Please check your internet connection.');
+  }
+
+  static Future<void> _cacheVerses(int chapterId, String jsonString) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cached_verses_$chapterId', jsonString);
+    } catch (e) {
+      debugPrint('QuranService: Failed to cache verses for surah $chapterId: $e');
+    }
   }
 }
 

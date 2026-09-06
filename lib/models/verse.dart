@@ -17,11 +17,31 @@ class Verse {
     this.audioUrl,
   });
 
+  static String cleanArabicText(String text) {
+    return text
+        .replaceAll(RegExp(r'[\uE000-\uF8FF]'), '') // private-use area glyphs
+        .replaceAll(RegExp(r'[\u200B-\u200F\u202A-\u202E\uFEFF]'), '') // zero-width & bidi marks
+        .replaceAll('\u2002', ' ') // en-space -> normal space
+        .trim();
+  }
+
+  static String stripFootnotes(String html) {
+    return html
+        .replaceAll(RegExp(r'<sup[^>]*>.*?<\/sup>'), '')
+        .replaceAll(RegExp(r'<[^>]+>'), '')
+        .trim();
+  }
+
   factory Verse.fromJson(Map<String, dynamic> json) {
     final translationsList = json['translations'] as List<dynamic>?;
-    final translation = (translationsList != null && translationsList.isNotEmpty)
-        ? (translationsList.first as Map<String, dynamic>)['text'] as String? ?? ''
-        : '';
+    String translation = '';
+    if (translationsList != null && translationsList.isNotEmpty) {
+      final firstTrans = translationsList.first as Map<String, dynamic>;
+      translation = stripFootnotes(firstTrans['text'] as String? ?? '');
+    } else if (json['translation'] is String) {
+      translation = stripFootnotes(json['translation'] as String);
+    }
+
     final audioObj = json['audio'] as Map<String, dynamic>?;
     final audioUrl = audioObj?['url'] as String?;
 
@@ -29,7 +49,7 @@ class Verse {
       id: json['id'] as int,
       verseNumber: json['verse_number'] as int? ?? 0,
       verseKey: json['verse_key'] as String? ?? '',
-      textIndopak: json['text_indopak'] as String? ?? '',
+      textIndopak: cleanArabicText(json['text_indopak'] as String? ?? ''),
       translationText: translation,
       audioUrl: audioUrl,
     );
