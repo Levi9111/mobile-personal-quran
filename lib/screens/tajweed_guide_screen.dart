@@ -91,6 +91,8 @@ class TajweedGuideScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -106,13 +108,23 @@ class TajweedGuideScreen extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            Text(
-              'LEARN TO RECITE',
-              style: GoogleFonts.karla(
-                fontSize: 11,
-                letterSpacing: 3,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.auto_awesome, size: 12, color: AppTheme.celestialStarGold),
+                const SizedBox(width: 6),
+                Text(
+                  'LEARN TO RECITE',
+                  style: GoogleFonts.karla(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 3,
+                    color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(Icons.auto_awesome, size: 12, color: AppTheme.celestialStarGold),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
@@ -120,12 +132,12 @@ class TajweedGuideScreen extends StatelessWidget {
               style: GoogleFonts.cormorantGaramond(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              'Every coloured letter in the reader maps to a tajweed rule family.',
+              'Every coloured letter in the reader maps to an authentic tajweed rule family.',
               textAlign: TextAlign.center,
               style: GoogleFonts.karla(
                 fontSize: 13,
@@ -146,7 +158,17 @@ class TajweedGuideScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: theme.cardTheme.color,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: theme.colorScheme.outline, width: 1),
+                  border: Border.all(
+                    color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? const Color(0xFF020617).withOpacity(0.4) : Colors.black.withOpacity(0.04),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

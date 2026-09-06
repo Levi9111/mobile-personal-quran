@@ -36,35 +36,37 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'Protection & Safety':
-        return const Color(0xFF10B981); // Emerald
+        return AppTheme.primaryEmerald; // Celestial Emerald
       case 'Tawheed & Faith':
-        return AppTheme.metallicGold; // Gold
+        return AppTheme.celestialStarGold; // Glowing Anime Star Gold
       case 'Patience & Perseverance':
-        return const Color(0xFF06B6D4); // Cyan
+        return AppTheme.celestialStarlightBlue; // Starlight Sky
       case 'Mercy & Forgiveness':
-        return const Color(0xFF8B5CF6); // Purple
+        return AppTheme.celestialTwilightPurple; // Twilight Violet
       case 'Daily Recitation':
-        return AppTheme.primaryEmerald; // Brand Teal
+        return const Color(0xFF06B6D4); // Cyan Starlight
       case 'Quranic Duas':
       case 'Prophetic Prayers':
-        return const Color(0xFFF59E0B); // Amber
+        return AppTheme.celestialWarmAmber; // Radiant Amber
       case 'Family & Parents':
-        return const Color(0xFFEC4899); // Pink
+        return const Color(0xFFFB7185); // Celestial Rose
       case 'Knowledge & Wisdom':
-        return const Color(0xFF3B82F6); // Blue
+        return const Color(0xFF60A5FA); // Celestial Azure
       default:
-        return AppTheme.primaryEmerald;
+        return AppTheme.celestialStarGold;
     }
   }
 
   void _showNoteDialog(BuildContext context, ImportantVersesProvider provider) {
     final existingNote = provider.getPersonalNote(widget.verse.verseKey) ?? '';
     final textController = TextEditingController(text: existingNote);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: isDark ? AppTheme.celestialDeepIndigo : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -87,18 +89,30 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Personal Reflections',
-                          style: GoogleFonts.cormorantGaramond(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome,
+                              size: 14,
+                              color: AppTheme.celestialStarGold,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Personal Reflections',
+                              style: GoogleFonts.cormorantGaramond(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
                         Text(
                           '${widget.verse.surahName} (${widget.verse.verseKey})',
                           style: GoogleFonts.karla(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.celestialStarGold,
                           ),
                         ),
                       ],
@@ -126,7 +140,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   filled: true,
-                  fillColor: Theme.of(context).scaffoldBackgroundColor,
+                  fillColor: isDark ? AppTheme.celestialMidnight : const Color(0xFFF8FAFC),
                 ),
               ),
               const SizedBox(height: 16),
@@ -136,36 +150,44 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                   if (existingNote.isNotEmpty) ...[
                     TextButton.icon(
                       onPressed: () {
-                        provider.deletePersonalNote(widget.verse.verseKey);
+                        provider.removePersonalNote(widget.verse.verseKey);
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Note deleted')),
                         );
                       },
-                      icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline, size: 16, color: Colors.redAccent),
                       label: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
                     ),
-                    const SizedBox(width: 8),
+                    const Spacer(),
                   ],
-                  ElevatedButton(
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
                     onPressed: () {
-                      provider.savePersonalNote(
-                        widget.verse.verseKey,
-                        textController.text,
-                      );
+                      final text = textController.text.trim();
+                      if (text.isEmpty) {
+                        provider.removePersonalNote(widget.verse.verseKey);
+                      } else {
+                        provider.savePersonalNote(widget.verse.verseKey, text);
+                      }
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Reflection saved!')),
+                        const SnackBar(content: Text('Reflection saved')),
                       );
                     },
+                    icon: const Icon(Icons.save_rounded, size: 16),
+                    label: const Text('Save Reflection'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
+                      backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: const Text('Save Note'),
                   ),
                 ],
               ),
@@ -197,6 +219,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final provider = Provider.of<ImportantVersesProvider>(context);
     final isFav = provider.isFavorite(widget.verse.id);
     final hasNote = provider.hasPersonalNote(widget.verse.verseKey);
@@ -207,24 +230,34 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: widget.isPlaying
-            ? theme.colorScheme.primary.withOpacity(0.08)
+            ? (isDark ? const Color(0xFF16233F) : const Color(0xFFFEF9C3).withOpacity(0.4))
             : theme.cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: widget.isPlaying
-              ? theme.colorScheme.primary
+              ? AppTheme.celestialStarGold
               : isFav
-                  ? AppTheme.metallicGold.withOpacity(0.5)
-                  : theme.colorScheme.outline,
+                  ? (isDark ? AppTheme.celestialStarGold.withOpacity(0.7) : const Color(0xFF1E3A8A).withOpacity(0.5))
+                  : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
           width: widget.isPlaying ? 1.5 : 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: widget.isPlaying
+            ? [
+                BoxShadow(
+                  color: AppTheme.celestialStarGold.withOpacity(0.25),
+                  blurRadius: 18,
+                  spreadRadius: 1,
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: isDark
+                      ? const Color(0xFF020617).withOpacity(0.4)
+                      : Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -240,7 +273,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                   decoration: BoxDecoration(
                     color: categoryColor.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: categoryColor.withOpacity(0.4), width: 0.8),
+                    border: Border.all(color: categoryColor.withOpacity(0.5), width: 1),
                   ),
                   child: Text(
                     widget.verse.category,
@@ -254,17 +287,25 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                 const SizedBox(width: 8),
                 // Surah & Ayah Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.secondary.withOpacity(0.12),
+                    color: isDark
+                        ? AppTheme.celestialStarGold.withOpacity(0.12)
+                        : const Color(0xFF1E3A8A).withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark
+                          ? AppTheme.celestialStarGold.withOpacity(0.5)
+                          : const Color(0xFF1E3A8A).withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     '${widget.verse.surahName} ${widget.verse.verseKey}',
                     style: GoogleFonts.karla(
                       fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
                     ),
                   ),
                 ),
@@ -273,7 +314,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                 IconButton(
                   icon: Icon(
                     isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    color: isFav ? Colors.redAccent : theme.colorScheme.onSurface.withOpacity(0.4),
+                    color: isFav ? const Color(0xFFF43F5E) : theme.colorScheme.onSurface.withOpacity(0.4),
                     size: 20,
                   ),
                   padding: EdgeInsets.zero,
@@ -289,9 +330,9 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
             Text(
               widget.verse.title,
               style: GoogleFonts.cormorantGaramond(
-                fontSize: 20,
+                fontSize: 21,
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
               ),
             ),
             const SizedBox(height: 14),
@@ -324,17 +365,27 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                   icon: Icon(
                     widget.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                     size: 16,
+                    color: widget.isPlaying
+                        ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                        : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
                   ),
-                  label: Text(widget.isPlaying ? 'Pause' : 'Recitation'),
+                  label: Text(
+                    widget.isPlaying ? 'Pause' : 'Recitation',
+                    style: TextStyle(
+                      color: widget.isPlaying
+                          ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                          : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: widget.isPlaying
-                        ? Colors.white
-                        : theme.colorScheme.primary,
                     backgroundColor: widget.isPlaying
-                        ? theme.colorScheme.primary
+                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
                         : Colors.transparent,
-                    side: BorderSide(color: theme.colorScheme.primary),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    side: BorderSide(
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      width: 1.2,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -348,14 +399,16 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                   icon: Icon(
                     hasNote ? Icons.edit_note_rounded : Icons.note_add_outlined,
                     size: 18,
-                    color: hasNote ? AppTheme.metallicGold : theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: hasNote
+                        ? AppTheme.celestialStarGold
+                        : theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
                   tooltip: hasNote ? 'View / Edit Note' : 'Add Note',
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: hasNote
-                          ? AppTheme.metallicGold
-                          : theme.colorScheme.outline,
+                          ? AppTheme.celestialStarGold
+                          : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
                     ),
                     padding: const EdgeInsets.all(8),
                     shape: RoundedRectangleBorder(

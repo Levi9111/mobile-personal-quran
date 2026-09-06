@@ -118,49 +118,102 @@ class _SurahScreenState extends State<SurahScreen> {
 
           final verses = snapshot.data ?? [];
 
+          final isDark = theme.brightness == Brightness.dark;
+
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Surah Header Banner
+              // Celestial Surah Header Banner
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: Column(
                     children: [
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                         decoration: BoxDecoration(
-                          color: theme.cardTheme.color,
-                          borderRadius: BorderRadius.circular(20),
+                          gradient: isDark
+                              ? const LinearGradient(
+                                  colors: [
+                                    Color(0xFF131F3A),
+                                    Color(0xFF0F172A),
+                                    Color(0xFF080D1A),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                )
+                              : const LinearGradient(
+                                  colors: [
+                                    Color(0xFFFFFFFF),
+                                    Color(0xFFF1F6FE),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                          borderRadius: BorderRadius.circular(22),
                           border: Border.all(
-                            color: AppTheme.metallicGold.withOpacity(0.4),
-                            width: 1,
+                            color: isDark
+                                ? AppTheme.celestialStarGold.withOpacity(0.4)
+                                : const Color(0xFFD6E2F0),
+                            width: 1.2,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? const Color(0xFF020617).withOpacity(0.4)
+                                  : const Color(0xFF94A3B8).withOpacity(0.12),
+                              blurRadius: 18,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
                         child: Column(
                           children: [
-                            Text(
-                              'SURAH ${chapter.id}',
-                              style: GoogleFonts.karla(
-                                fontSize: 11,
-                                letterSpacing: 2,
-                                color: theme.colorScheme.onSurface.withOpacity(0.5),
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.auto_awesome,
+                                  size: 12,
+                                  color: AppTheme.celestialStarGold,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'SURAH ${chapter.id}',
+                                  style: GoogleFonts.karla(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 3,
+                                    color: isDark
+                                        ? AppTheme.celestialStarGold
+                                        : const Color(0xFF1E3A8A),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Icon(
+                                  Icons.auto_awesome,
+                                  size: 12,
+                                  color: AppTheme.celestialStarGold,
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 6),
                             Text(
                               chapter.nameArabic,
                               style: GoogleFonts.scheherazadeNew(
-                                fontSize: 38,
-                                color: theme.colorScheme.primary,
+                                fontSize: 40,
+                                color: isDark
+                                    ? AppTheme.celestialStarGold
+                                    : const Color(0xFF1E3A8A),
                               ),
                             ),
                             Text(
                               chapter.nameSimple,
                               style: GoogleFonts.cormorantGaramond(
-                                fontSize: 24,
+                                fontSize: 26,
                                 fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -168,13 +221,13 @@ class _SurahScreenState extends State<SurahScreen> {
                               '${chapter.translatedName} · ${chapter.versesCount} ayahs · ${chapter.revelationPlace}',
                               style: GoogleFonts.karla(
                                 fontSize: 12,
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.withOpacity(0.65),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       const TajweedLegendWidget(),
                       if (chapter.id != 1 && chapter.id != 9) ...[
                         const SizedBox(height: 20),
@@ -204,15 +257,28 @@ class _SurahScreenState extends State<SurahScreen> {
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           color: isPlaying
-                              ? theme.colorScheme.primary.withOpacity(0.08)
+                              ? (isDark
+                                  ? const Color(0xFF16233F)
+                                  : const Color(0xFFFEF9C3).withOpacity(0.4))
                               : theme.cardTheme.color,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
                             color: isPlaying
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline,
+                                ? AppTheme.celestialStarGold
+                                : (isDark
+                                    ? AppTheme.celestialBorderIndigo
+                                    : AppTheme.lightBorder),
                             width: isPlaying ? 1.5 : 1,
                           ),
+                          boxShadow: isPlaying
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.celestialStarGold.withOpacity(0.25),
+                                    blurRadius: 16,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -228,24 +294,34 @@ class _SurahScreenState extends State<SurahScreen> {
                               style: GoogleFonts.karla(
                                 fontSize: 14,
                                 height: 1.5,
-                                color: theme.colorScheme.onSurface.withOpacity(0.8),
+                                color: theme.colorScheme.onSurface.withOpacity(0.85),
                               ),
                             ),
                             const SizedBox(height: 14),
                             Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.secondary.withOpacity(0.15),
+                                    color: isDark
+                                        ? AppTheme.celestialStarGold.withOpacity(0.12)
+                                        : const Color(0xFF1E3A8A).withOpacity(0.08),
                                     borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? AppTheme.celestialStarGold.withOpacity(0.5)
+                                          : const Color(0xFF1E3A8A).withOpacity(0.3),
+                                      width: 1,
+                                    ),
                                   ),
                                   child: Text(
                                     '${chapter.id}:${verse.verseNumber}',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colorScheme.secondary,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? AppTheme.celestialStarGold
+                                          : const Color(0xFF1E3A8A),
                                     ),
                                   ),
                                 ),
@@ -255,17 +331,25 @@ class _SurahScreenState extends State<SurahScreen> {
                                   icon: Icon(
                                     isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                                     size: 16,
+                                    color: isPlaying
+                                        ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                                        : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
                                   ),
-                                  label: Text(isPlaying ? 'Pause' : 'Play'),
+                                  label: Text(
+                                    isPlaying ? 'Pause' : 'Play',
+                                    style: TextStyle(
+                                      color: isPlaying
+                                          ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                                          : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                                    ),
+                                  ),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: isPlaying
-                                        ? Colors.white
-                                        : theme.colorScheme.primary,
                                     backgroundColor: isPlaying
-                                        ? theme.colorScheme.primary
+                                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
                                         : Colors.transparent,
                                     side: BorderSide(
-                                      color: theme.colorScheme.primary,
+                                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                                      width: 1.2,
                                     ),
                                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                                     shape: RoundedRectangleBorder(

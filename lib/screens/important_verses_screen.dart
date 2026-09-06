@@ -242,18 +242,23 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                           children: [
                             OutlinedButton.icon(
                               onPressed: () => _showOccasionFilterModal(context, provider),
-                              icon: const Icon(Icons.tune_rounded, size: 16, color: AppTheme.metallicGold),
+                              icon: const Icon(Icons.tune_rounded, size: 16, color: AppTheme.celestialStarGold),
                               label: Text(
                                 provider.selectedOccasion == 'All'
                                     ? 'Filter Occasions'
                                     : 'Occasion: ${provider.selectedOccasion}',
-                                style: const TextStyle(fontSize: 12),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.onSurface,
+                                ),
                               ),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                   color: provider.selectedOccasion != 'All'
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.outline,
+                                      ? AppTheme.celestialStarGold
+                                      : (theme.brightness == Brightness.dark
+                                          ? AppTheme.celestialBorderIndigo
+                                          : AppTheme.lightBorder),
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -271,7 +276,13 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                                   _searchController.clear();
                                   provider.clearFilters();
                                 },
-                                child: const Text('Reset', style: TextStyle(fontSize: 12)),
+                                child: const Text(
+                                  'Reset',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.celestialStarlightBlue,
+                                  ),
+                                ),
                               ),
                             ],
                           ],
@@ -288,12 +299,21 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                             itemBuilder: (context, index) {
                               final cat = provider.categories[index];
                               final isSelected = provider.selectedCategory == cat;
+                              final isDark = theme.brightness == Brightness.dark;
                               return ChoiceChip(
                                 label: Text(cat),
                                 selected: isSelected,
-                                selectedColor: theme.colorScheme.primary,
+                                selectedColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                                backgroundColor: isDark ? AppTheme.celestialDeepIndigo : Colors.white,
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
+                                      : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
+                                ),
                                 labelStyle: TextStyle(
-                                  color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                                  color: isSelected
+                                      ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                                      : theme.colorScheme.onSurface,
                                   fontSize: 12,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -315,19 +335,38 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppTheme.primaryEmerald.withOpacity(0.18),
-                                  AppTheme.metallicGold.withOpacity(0.12),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(18),
+                              gradient: theme.brightness == Brightness.dark
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color(0xFF16233F),
+                                        Color(0xFF0F172A),
+                                        Color(0xFF080D1A),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFFFFFF),
+                                        Color(0xFFF1F6FE),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                              borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.metallicGold.withOpacity(0.4),
-                                width: 1,
+                                color: AppTheme.celestialStarGold.withOpacity(0.5),
+                                width: 1.2,
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.brightness == Brightness.dark
+                                      ? AppTheme.celestialStarGold.withOpacity(0.12)
+                                      : const Color(0xFF94A3B8).withOpacity(0.12),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,28 +374,39 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.metallicGold,
+                                        color: AppTheme.celestialStarGold,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text(
-                                        'DAILY SPOTLIGHT',
-                                        style: GoogleFonts.karla(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.2,
-                                          color: Colors.black,
-                                        ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.auto_awesome,
+                                            size: 10,
+                                            color: AppTheme.celestialMidnight,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'DAILY SPOTLIGHT',
+                                            style: GoogleFonts.karla(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.2,
+                                              color: AppTheme.celestialMidnight,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       '${dailyVerse.surahName} ${dailyVerse.verseKey}',
                                       style: GoogleFonts.karla(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: theme.colorScheme.primary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.celestialStarGold,
                                       ),
                                     ),
                                   ],
@@ -365,7 +415,7 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                                 Text(
                                   dailyVerse.title,
                                   style: GoogleFonts.cormorantGaramond(
-                                    fontSize: 18,
+                                    fontSize: 19,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
