@@ -71,6 +71,14 @@ class NotificationService with ChangeNotifier {
     _periodicCheckTimer = null;
   }
 
+  /// Checks whether the given time falls within quiet hours (22:00 to 05:00).
+  static bool isQuietHours([DateTime? time]) {
+    final now = time ?? DateTime.now();
+    final hour = now.hour;
+    // Muted from 22:00 (10 PM) to 05:00 (5 AM)
+    return hour >= 22 || hour < 5;
+  }
+
   /// Evaluates whether daily missed pop or 8-hour reminder should be triggered.
   Future<void> evaluateReminders(
     BuildContext context,
@@ -92,8 +100,8 @@ class NotificationService with ChangeNotifier {
       return;
     }
 
-    // 2. Check 8-Hour Periodic Reading Reminder
-    if (_reminder8HourEnabled) {
+    // 2. Check 8-Hour Periodic Reading Reminder (muted during quiet hours: 22:00 to 05:00)
+    if (_reminder8HourEnabled && !isQuietHours(now)) {
       final lastReminderTimeStr = prefs.getString(_keyLastReminderTime);
       final lastReminderTime = lastReminderTimeStr != null
           ? DateTime.tryParse(lastReminderTimeStr)

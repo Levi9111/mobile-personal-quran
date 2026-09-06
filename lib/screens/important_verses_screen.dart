@@ -191,13 +191,24 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryEmerald))
-          : CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // Top Search & Hero Section
-                SliverToBoxAdapter(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: theme.brightness == Brightness.dark ? 0.28 : 0.14,
+              child: Image.asset(
+                'assets/images/celestial_clouds.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryEmerald))
+              : CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // Top Search & Hero Section
+                    SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Column(
@@ -518,7 +529,12 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                         ),
                       )
                     : SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          4,
+                          16,
+                          MediaQuery.of(context).padding.bottom + 28,
+                        ),
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
@@ -538,6 +554,8 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                       ),
               ],
             ),
+        ],
+      ),
     );
   }
 }

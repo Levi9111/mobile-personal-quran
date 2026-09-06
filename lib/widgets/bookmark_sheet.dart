@@ -138,7 +138,12 @@ class BookmarkSheet extends StatelessWidget {
                   )
                 : ListView.builder(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      12,
+                      16,
+                      MediaQuery.of(context).padding.bottom + 28,
+                    ),
                     itemCount: bookmarks.length,
                     itemBuilder: (context, index) {
                       final bookmark = bookmarks[index];

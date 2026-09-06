@@ -103,10 +103,28 @@ class TajweedGuideScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: isDark ? 0.28 : 0.14,
+              child: Image.asset(
+                'assets/images/celestial_clouds.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SafeArea(
+            bottom: true,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                MediaQuery.of(context).padding.bottom + 36,
+              ),
+              physics: const BouncingScrollPhysics(),
+              child: Column(
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -320,6 +338,9 @@ class TajweedGuideScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
+  ],
+),
     );
   }
 }

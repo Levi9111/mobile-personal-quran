@@ -146,8 +146,19 @@ class _SurahScreenState extends State<SurahScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: FutureBuilder<List<Verse>>(
-        future: _versesFuture,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Opacity(
+              opacity: isDark ? 0.28 : 0.14,
+              child: Image.asset(
+                'assets/images/celestial_clouds.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          FutureBuilder<List<Verse>>(
+            future: _versesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -308,7 +319,12 @@ class _SurahScreenState extends State<SurahScreen> {
 
               // Verses List
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  8,
+                  16,
+                  MediaQuery.of(context).padding.bottom + 28,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -511,6 +527,8 @@ class _SurahScreenState extends State<SurahScreen> {
             ],
           );
         },
+      ),
+        ],
       ),
     );
   }
