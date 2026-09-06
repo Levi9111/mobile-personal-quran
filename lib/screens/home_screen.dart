@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'NOOR QURAN',
+                        'NOOR',
                         style: GoogleFonts.karla(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
