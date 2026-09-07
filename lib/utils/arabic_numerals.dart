@@ -15,6 +15,9 @@ class ArabicNumeralHelper {
   };
 
   /// Converts an integer or numeric string into Eastern Arabic numerals (٠-٩).
+  static String toArabicDigits(dynamic value) => toArabic(value);
+
+  /// Converts an integer or numeric string into Eastern Arabic numerals (٠-٩).
   static String toArabic(dynamic value) {
     final str = value.toString();
     final buffer = StringBuffer();

@@ -5,6 +5,7 @@ class Chapter {
   final int versesCount;
   final String revelationPlace;
   final String translatedName;
+  final String? nameComplex;
 
   Chapter({
     required this.id,
@@ -13,6 +14,7 @@ class Chapter {
     required this.versesCount,
     required this.revelationPlace,
     required this.translatedName,
+    this.nameComplex,
   });
 
   factory Chapter.fromJson(Map<String, dynamic> json) {

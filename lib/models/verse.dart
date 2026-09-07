@@ -1,3 +1,5 @@
+import '../utils/arabic_numerals.dart';
+
 class Verse {
   final int id;
   final int verseNumber;
@@ -7,6 +9,12 @@ class Verse {
   final String? audioUrl;
 
   String get verse_key => verseKey;
+  String get textUthmani => textIndopak;
+  String get dualVerseReference {
+    final parts = verseKey.split(':');
+    final ch = parts.isNotEmpty ? parts[0] : '';
+    return ArabicNumeralHelper.formatDual(ch, verseNumber);
+  }
 
   Verse({
     required this.id,
