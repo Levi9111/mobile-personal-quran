@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/bookmark_provider.dart';
 import 'providers/important_verses_provider.dart';
 import 'providers/theme_provider.dart';
+import 'screens/animated_splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -33,7 +34,7 @@ class NoorApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: const HomeScreen(),
+      home: const AnimatedSplashScreen(),
     );
   }
 }
