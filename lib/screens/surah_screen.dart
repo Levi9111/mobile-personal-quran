@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'mushaf_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +12,11 @@ import '../theme/app_theme.dart';
 import '../utils/arabic_numerals.dart';
 import '../widgets/bookmark_sheet.dart';
 import '../widgets/celestial_notification_banner.dart';
+import '../widgets/concise_tafsir_sheet.dart';
 import '../widgets/tajweed_legend.dart';
 import '../widgets/tajweed_text.dart';
+import '../services/offline_audio_manager.dart';
+import '../widgets/offline_audio_sheet.dart';
 
 class SurahScreen extends StatefulWidget {
   final Chapter chapter;
@@ -67,8 +71,20 @@ class _SurahScreenState extends State<SurahScreen> {
       });
     } else {
       await _audioPlayer.stop();
-      final fullUrl = '${QuranService.audioBaseUrl}$audioUrl';
-      await _audioPlayer.play(UrlSource(fullUrl));
+
+      // Check if verse audio is stored offline locally
+      final parts = verseKey.split(':');
+      final surahId = int.tryParse(parts[0]) ?? widget.chapter.id;
+      final verseNum = parts.length > 1 ? int.tryParse(parts[1]) ?? 1 : 1;
+      final localPath = await OfflineAudioManager.getLocalVerseAudioPath(surahId, verseNum);
+
+      if (localPath != null) {
+        await _audioPlayer.play(DeviceFileSource(localPath));
+      } else {
+        final fullUrl = '${QuranService.audioBaseUrl}$audioUrl';
+        await _audioPlayer.play(UrlSource(fullUrl));
+      }
+
       setState(() {
         _playingVerseKey = verseKey;
       });
@@ -143,7 +159,37 @@ class _SurahScreenState extends State<SurahScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          // Mushaf Page Mode Switcher
+          IconButton(
+            icon: const Icon(Icons.auto_stories_rounded, size: 20),
+            color: AppTheme.celestialStarGold,
+            tooltip: 'Open Mushaf Page Mode',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MushafScreen(chapter: chapter),
+                ),
+              );
+            },
+          ),
+          // Offline Audio Download Button
+          IconButton(
+            icon: const Icon(Icons.download_for_offline_outlined, size: 20),
+            color: AppTheme.celestialStarlightBlue,
+            tooltip: 'Offline Audio Manager',
+            onPressed: () async {
+              final verses = await _versesFuture;
+              if (!mounted) return;
+              OfflineAudioSheet.show(
+                context,
+                chapter: chapter,
+                verses: verses,
+                onStatusChanged: () => setState(() {}),
+              );
+            },
+          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: Stack(
@@ -477,6 +523,25 @@ class _SurahScreenState extends State<SurahScreen> {
                                         duration: const Duration(seconds: 4),
                                       );
                                     }
+                                  },
+                                ),
+
+                                // Tafsir (Short Explanation) Button
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.lightbulb_outline_rounded,
+                                    size: 21,
+                                    color: isDark
+                                        ? AppTheme.celestialStarGold.withOpacity(0.85)
+                                        : const Color(0xFF1E3A8A).withOpacity(0.75),
+                                  ),
+                                  tooltip: 'Short Tafsir & Meaning',
+                                  onPressed: () {
+                                    ConciseTafsirSheet.show(
+                                      context,
+                                      chapter: chapter,
+                                      verse: verse,
+                                    );
                                   },
                                 ),
 
