@@ -13,8 +13,10 @@ import '../widgets/bookmark_sheet.dart';
 import '../widgets/juz_browser_widget.dart';
 import '../widgets/ramadan_countdown_card.dart';
 import 'important_verses_screen.dart';
+import 'mushaf_screen.dart';
 import 'surah_screen.dart';
 import 'tajweed_guide_screen.dart';
+import '../widgets/data_backup_sheet.dart';
 
 enum SurahFilter { all, popular, makki, madani, juzAmma }
 
@@ -328,6 +330,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.cloud_sync_rounded, color: AppTheme.celestialStarGold),
+            tooltip: 'Backup & Restore Data',
+            onPressed: () => DataBackupSheet.show(context),
           ),
           IconButton(
             icon: Icon(
@@ -907,6 +914,68 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         foregroundColor: isDark ? AppTheme.celestialStarlightBlue : const Color(0xFF0284C7),
                         side: BorderSide(
                           color: isDark ? AppTheme.celestialStarlightBlue.withOpacity(0.6) : const Color(0xFF0284C7),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        final lastRead = context.read<BookmarkProvider>().lastReadBookmark;
+                        final targetChapter = _allChapters.isNotEmpty
+                            ? _allChapters.firstWhere(
+                                (c) => lastRead != null && c.id == lastRead.surahId,
+                                orElse: () => _allChapters.first,
+                              )
+                            : Chapter(
+                                id: 1,
+                                nameSimple: 'Al-Fatihah',
+                                nameArabic: 'الفاتحة',
+                                versesCount: 7,
+                                revelationPlace: 'makkah',
+                                translatedName: 'The Opener',
+                              );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MushafScreen(
+                              chapter: targetChapter,
+                              initialVerseNumber: lastRead?.verseNumber,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.menu_book_rounded,
+                        size: 14,
+                        color: AppTheme.celestialStarGold,
+                      ),
+                      label: const Text('Mushaf Mode'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
+                        side: BorderSide(
+                          color: isDark ? AppTheme.celestialStarGold.withOpacity(0.6) : const Color(0xFFB45309),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => DataBackupSheet.show(context),
+                      icon: const Icon(
+                        Icons.cloud_sync_rounded,
+                        size: 14,
+                        color: Color(0xFF10B981),
+                      ),
+                      label: const Text('Backup & Restore'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
+                        side: BorderSide(
+                          color: isDark ? const Color(0xFF34D399).withOpacity(0.6) : const Color(0xFF059669),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         shape: RoundedRectangleBorder(

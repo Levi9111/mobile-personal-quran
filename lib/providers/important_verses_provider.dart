@@ -86,6 +86,11 @@ class ImportantVersesProvider extends ChangeNotifier {
 
   Future<void>? _loadFuture;
 
+  Future<void> reload() async {
+    _loadFuture = null;
+    await _performLoadData();
+  }
+
   Future<void> loadData() {
     _loadFuture ??= _performLoadData();
     return _loadFuture!;

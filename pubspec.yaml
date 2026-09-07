@@ -40,6 +40,8 @@ dependencies:
   shared_preferences: ^2.5.5
   provider: ^6.1.5+1
   lucide_icons: ^0.257.0
+  path_provider: ^2.1.6
+  share_plus: ^13.3.0
 
 dev_dependencies:
   flutter_test:

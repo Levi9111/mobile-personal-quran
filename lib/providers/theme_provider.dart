@@ -9,10 +9,12 @@ class ThemeProvider with ChangeNotifier {
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   ThemeProvider() {
-    _loadTheme();
+    loadTheme();
   }
 
-  Future<void> _loadTheme() async {
+  Future<void> reload() => loadTheme();
+
+  Future<void> loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final String? themeStr = prefs.getString(_key);
     if (themeStr == 'light') {

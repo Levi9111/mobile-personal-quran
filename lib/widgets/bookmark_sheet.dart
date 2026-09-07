@@ -6,6 +6,7 @@ import '../providers/bookmark_provider.dart';
 import '../screens/surah_screen.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import 'data_backup_sheet.dart';
 
 class BookmarkSheet extends StatelessWidget {
   const BookmarkSheet({super.key});
@@ -92,6 +93,14 @@ class BookmarkSheet extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.cloud_sync_rounded, color: AppTheme.celestialStarGold),
+                  tooltip: 'Backup & Restore',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    DataBackupSheet.show(context);
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.pop(context),
