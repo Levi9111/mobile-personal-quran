@@ -113,6 +113,8 @@ class TafsirService {
   }
 
   /// Strips HTML tags and unescapes common entities
+  static String stripHtml(String html) => _cleanHtml(html);
+
   static String _cleanHtml(String html) {
     var text = html
         .replaceAll(RegExp(r'<style[^>]*>[\s\S]*?<\/style>'), '')
@@ -166,6 +168,17 @@ class TafsirService {
     final summary = buffer.toString().trim();
     return summary.isNotEmpty ? summary : (chosen.length > 250 ? '${chosen.substring(0, 247)}...' : chosen);
   }
+
+  /// Extracts concise summary string
+  static String extractConciseSummary(String fullText, {int maxLength = 240}) {
+    final cleaned = stripHtml(fullText);
+    if (cleaned.length <= maxLength) return cleaned;
+    return '${cleaned.substring(0, maxLength - 1).trim()}…';
+  }
+
+  /// Public access to curated concise offline explanations
+  static TafsirData getCuratedConciseTafsir(int surahId, int ayahNumber) =>
+      _getCuratedFallback(surahId, ayahNumber);
 
   /// Curated concise offline explanations for essential verses
   static TafsirData _getCuratedFallback(int surahId, int ayahNumber) {
