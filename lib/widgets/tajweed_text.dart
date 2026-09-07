@@ -19,7 +19,8 @@ class TajweedTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final defaultColor = theme.colorScheme.onSurface;
+    final isDark = theme.brightness == Brightness.dark;
+    final defaultColor = isDark ? theme.colorScheme.onSurface : const Color(0xFF0F172A);
     final arabicStyle = GoogleFonts.scheherazadeNew(
       fontSize: fontSize,
       height: 2.2,
@@ -38,7 +39,9 @@ class TajweedTextWidget extends StatelessWidget {
 
     final segments = TajweedParser.parse(text);
     final spans = segments.map((seg) {
-      final color = seg.rule != null ? ruleMetaMap[seg.rule]!.color : defaultColor;
+      final color = seg.rule != null
+          ? ruleMetaMap[seg.rule]!.resolveColor(isDark)
+          : defaultColor;
       return TextSpan(
         text: seg.text,
         style: arabicStyle.copyWith(color: color),

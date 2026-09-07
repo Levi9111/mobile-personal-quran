@@ -29,15 +29,28 @@ class AppTheme {
   static const Color darkForeground = Color(0xFFF8FAFC);
   static const Color darkMuted = Color(0xFF94A3B8);
 
-  // Light Theme Colors (Celestial Anime Dawn)
-  static const Color lightBackground = Color(0xFFF1F5F9);
+  // Light Theme Colors (Celestial Anime Dawn & Warm Sacred Parchment)
+  static const Color lightBackground = Color(0xFFFAF8F5); // Luminous celestial cream
   static const Color lightCard = Color(0xFFFFFFFF);
-  static const Color lightSurface = Color(0xFFE2E8F0);
-  static const Color lightBorder = Color(0xFFCBD5E1);
-  static const Color lightForeground = Color(0xFF0F172A);
-  static const Color lightMuted = Color(0xFF64748B);
+  static const Color lightSurface = Color(0xFFF4EFE6); // Soft warm parchment inner surface
+  static const Color lightBorder = Color(0xFFEADBCE); // Warm champagne gold border
+  static const Color lightForeground = Color(0xFF0F172A); // Deep obsidian calligraphy ink
+  static const Color lightMuted = Color(0xFF64748B); // Slate taupe muted text
+  static const Color lightStarGold = Color(0xFFB45309); // Rich burnished anime gold (high contrast)
+  static const Color lightStarlightBlue = Color(0xFF0284C7); // Royal azure starlight
+  static const Color lightEmerald = Color(0xFF059669); // Radiant celestial emerald
+  static const Color lightTwilightPurple = Color(0xFF7C3AED); // Radiant dusk amethyst
 
-  // Tajweed Colors (Vibrant Celestial Hues)
+  // Theme-aware color helpers
+  static Color getAccentGold(bool isDark) => isDark ? celestialStarGold : lightStarGold;
+  static Color getStarlightBlue(bool isDark) => isDark ? celestialStarlightBlue : lightStarlightBlue;
+  static Color getBorderColor(bool isDark) => isDark ? celestialBorderIndigo : lightBorder;
+  static Color getCardColor(bool isDark) => isDark ? darkCard : lightCard;
+  static Color getSurfaceColor(bool isDark) => isDark ? darkSurface : lightSurface;
+  static Color getForegroundColor(bool isDark) => isDark ? darkForeground : lightForeground;
+  static Color getMutedColor(bool isDark) => isDark ? darkMuted : lightMuted;
+
+  // Tajweed Colors (Dark Theme & Light Theme Aware)
   static const Color ghunnaColor = Color(0xFFF59E0B); // Warm Gold
   static const Color qalqalahColor = Color(0xFF38BDF8); // Starlight Sky Blue
   static const Color maddColor = Color(0xFFF43F5E); // Radiant Rose
@@ -157,10 +170,11 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: lightBackground,
       colorScheme: const ColorScheme.light(
-        primary: Color(0xFF1E3A8A),
+        primary: Color(0xFF1E293B), // Deep noble obsidian slate
         onPrimary: Colors.white,
-        secondary: celestialWarmAmber,
+        secondary: lightStarGold, // Rich burnished anime gold
         onSecondary: Colors.white,
+        tertiary: lightStarlightBlue, // Royal azure
         surface: lightCard,
         onSurface: lightForeground,
         outline: lightBorder,
@@ -169,8 +183,8 @@ class AppTheme {
         color: lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: lightBorder, width: 1),
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: lightBorder, width: 1.2),
         ),
       ),
       appBarTheme: const AppBarTheme(
@@ -182,7 +196,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1E3A8A),
+          backgroundColor: lightStarGold,
           foregroundColor: Colors.white,
           elevation: 0,
           textStyle: GoogleFonts.karla(
@@ -196,7 +210,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF1E3A8A),
+          foregroundColor: lightStarGold,
           side: const BorderSide(color: lightBorder, width: 1.2),
           textStyle: GoogleFonts.karla(
             fontSize: 13,
@@ -209,7 +223,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: lightCard,
+        fillColor: lightSurface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -221,7 +235,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 1.5),
+          borderSide: const BorderSide(color: lightStarGold, width: 1.5),
         ),
         hintStyle: GoogleFonts.karla(
           color: lightMuted,
@@ -229,14 +243,14 @@ class AppTheme {
         ),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: lightCard,
+        backgroundColor: lightBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
       ),
       textTheme: TextTheme(
         headlineMedium: GoogleFonts.cormorantGaramond(
-          color: Color(0xFF1E3A8A),
+          color: Color(0xFF0F172A),
           fontSize: 32,
           fontWeight: FontWeight.bold,
         ),

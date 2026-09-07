@@ -7,12 +7,16 @@ class TajweedMeta {
   final String label;
   final String description;
   final Color color;
+  final Color? lightColor;
 
   const TajweedMeta({
     required this.label,
     required this.description,
     required this.color,
+    this.lightColor,
   });
+
+  Color resolveColor(bool isDark) => isDark ? color : (lightColor ?? color);
 }
 
 const Map<TajweedRule, TajweedMeta> ruleMetaMap = {
@@ -20,26 +24,31 @@ const Map<TajweedRule, TajweedMeta> ruleMetaMap = {
     label: "Ghunna",
     description: "Nasal hum held 2 counts",
     color: AppTheme.ghunnaColor,
+    lightColor: Color(0xFFD97706), // Rich deep amber
   ),
   TajweedRule.qalqalah: TajweedMeta(
     label: "Qalqalah",
     description: "Bounced, echoing letter",
     color: AppTheme.qalqalahColor,
+    lightColor: Color(0xFF0284C7), // Vibrant royal azure (high contrast)
   ),
   TajweedRule.madd: TajweedMeta(
     label: "Madd",
     description: "Elongated 4–6 counts",
     color: AppTheme.maddColor,
+    lightColor: Color(0xFFE11D48), // Deep crimson rose
   ),
   TajweedRule.idgham: TajweedMeta(
     label: "Idgham",
     description: "Merged into the next letter",
     color: AppTheme.idghamColor,
+    lightColor: Color(0xFF059669), // Deep celestial emerald
   ),
   TajweedRule.ikhfa: TajweedMeta(
     label: "Ikhfa",
     description: "Hidden, nasalised noon/meem",
     color: AppTheme.ikhfaColor,
+    lightColor: Color(0xFF7C3AED), // Deep dusk amethyst
   ),
 };
 
