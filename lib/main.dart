@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'providers/bookmark_provider.dart';
 import 'providers/important_verses_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/notification_service.dart';
 import 'screens/animated_splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   runApp(
     MultiProvider(
       providers: [
