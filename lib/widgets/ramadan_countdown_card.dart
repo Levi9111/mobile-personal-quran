@@ -92,10 +92,10 @@ class RamadanCountdownCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: isDark ? const Color(0xFF0F172A) : Colors.white,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.nightlight_round,
                       size: 24,
-                      color: AppTheme.celestialStarGold,
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
                     ),
                   ),
                 ),

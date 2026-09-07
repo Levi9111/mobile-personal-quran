@@ -16,6 +16,7 @@ import 'important_verses_screen.dart';
 import 'mushaf_screen.dart';
 import 'surah_screen.dart';
 import 'tajweed_guide_screen.dart';
+import '../widgets/celestial_background.dart';
 import '../widgets/data_backup_sheet.dart';
 
 enum SurahFilter { all, popular, makki, madani, juzAmma }
@@ -315,12 +316,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppTheme.celestialStarGold),
+            icon: Icon(Icons.notifications_outlined, color: AppTheme.getAccentGold(isDark)),
             tooltip: 'Reading Reminders',
             onPressed: _showNotificationSettingsModal,
           ),
           IconButton(
-            icon: const Icon(Icons.stars_rounded, color: AppTheme.metallicGold),
+            icon: Icon(Icons.stars_rounded, color: AppTheme.getAccentGold(isDark)),
             tooltip: 'Important Verses & Duas',
             onPressed: () {
               Navigator.push(
@@ -332,32 +333,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             },
           ),
           IconButton(
-            icon: const Icon(Icons.cloud_sync_rounded, color: AppTheme.celestialStarGold),
+            icon: Icon(Icons.cloud_sync_rounded, color: AppTheme.getAccentGold(isDark)),
             tooltip: 'Backup & Restore Data',
             onPressed: () => DataBackupSheet.show(context),
           ),
           IconButton(
             icon: Icon(
               isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-              color: isDark ? AppTheme.metallicGold : AppTheme.primaryTealLight,
+              color: AppTheme.getAccentGold(isDark),
             ),
             onPressed: () => themeProvider.toggleTheme(),
-            tooltip: 'Toggle Dark Mode',
+            tooltip: 'Toggle Theme',
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: Stack(
         children: [
-          // Full-screen persistent anime celestial background
-          Positioned.fill(
-            child: Opacity(
-              opacity: isDark ? 0.32 : 0.16,
-              child: Image.asset(
-                'assets/images/anime_celestial_bg.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+          // Full-screen persistent anime celestial background (theme-aware)
+          const Positioned.fill(
+            child: CelestialBackground(),
           ),
 
           // Main Scroll Content
@@ -425,10 +420,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         height: 48,
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF131F3A) : const Color(0xFFF1F5F9),
+                          color: isDark ? const Color(0xFF131F3A) : const Color(0xFFF2ECE0),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFE2E8F0),
+                            color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
                           ),
                         ),
                         child: TabBar(
@@ -436,20 +431,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           indicatorSize: TabBarIndicatorSize.tab,
                           dividerColor: Colors.transparent,
                           indicator: BoxDecoration(
-                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E293B),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
                                 color: isDark
                                     ? AppTheme.celestialStarGold.withOpacity(0.25)
-                                    : const Color(0xFF1E3A8A).withOpacity(0.2),
+                                    : const Color(0xFF1E293B).withOpacity(0.18),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
                           labelColor: isDark ? AppTheme.celestialMidnight : Colors.white,
-                          unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.7),
+                          unselectedLabelColor: isDark ? Colors.white70 : const Color(0xFF64748B),
                           labelStyle: GoogleFonts.karla(fontWeight: FontWeight.bold, fontSize: 13),
                           tabs: const [
                             Tab(
@@ -768,23 +763,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               )
-            : LinearGradient(
+            : const LinearGradient(
                 colors: [
-                  Colors.white.withOpacity(0.96),
-                  const Color(0xFFF1F6FE).withOpacity(0.96),
+                  Colors.white,
+                  Color(0xFFFAF7F0),
+                  Color(0xFFF5EEE1),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
         border: Border.all(
-          color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFD6E2F0),
+          color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
                 ? const Color(0xFF020617).withOpacity(0.5)
-                : const Color(0xFF94A3B8).withOpacity(0.12),
+                : const Color(0xFF78350F).withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -820,9 +816,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ],
                   ),
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppTheme.celestialMidnight,
+                      color: isDark ? AppTheme.celestialMidnight : Colors.white,
                     ),
                     padding: const EdgeInsets.all(2),
                     child: ClipOval(
@@ -837,7 +833,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.auto_awesome, size: 11, color: AppTheme.celestialStarGold),
+                    Icon(Icons.auto_awesome, size: 11, color: AppTheme.getAccentGold(isDark)),
                     const SizedBox(width: 5),
                     Text(
                       'NOOR QURAN',
@@ -845,11 +841,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2.5,
-                        color: AppTheme.celestialStarGold,
+                        color: AppTheme.getAccentGold(isDark),
                       ),
                     ),
                     const SizedBox(width: 5),
-                    const Icon(Icons.auto_awesome, size: 11, color: AppTheme.celestialStarGold),
+                    Icon(Icons.auto_awesome, size: 11, color: AppTheme.getAccentGold(isDark)),
                   ],
                 ),
                 Text(
@@ -857,14 +853,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   style: GoogleFonts.cormorantGaramond(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? AppTheme.darkForeground : const Color(0xFF1E3A8A),
+                    color: isDark ? AppTheme.darkForeground : const Color(0xFF0F172A),
                   ),
                 ),
                 Text(
                   'الْقُرْآنُ الْكَرِيمُ',
                   style: GoogleFonts.scheherazadeNew(
                     fontSize: 18,
-                    color: isDark ? AppTheme.celestialStarGold.withOpacity(0.85) : const Color(0xFFB45309),
+                    color: isDark ? AppTheme.celestialStarGold.withOpacity(0.85) : AppTheme.lightStarGold,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -887,8 +883,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       icon: const Icon(Icons.stars_rounded, size: 14),
                       label: const Text('Important Verses'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                        foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
+                        backgroundColor: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
@@ -947,16 +943,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                         );
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.menu_book_rounded,
                         size: 14,
-                        color: AppTheme.celestialStarGold,
+                        color: AppTheme.getAccentGold(isDark),
                       ),
                       label: const Text('Mushaf Mode'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
+                        foregroundColor: AppTheme.getAccentGold(isDark),
                         side: BorderSide(
-                          color: isDark ? AppTheme.celestialStarGold.withOpacity(0.6) : const Color(0xFFB45309),
+                          color: AppTheme.getAccentGold(isDark).withOpacity(0.7),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         shape: RoundedRectangleBorder(
@@ -973,9 +969,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                       label: const Text('Backup & Restore'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
+                        foregroundColor: isDark ? const Color(0xFF34D399) : const Color(0xFF047857),
                         side: BorderSide(
-                          color: isDark ? const Color(0xFF34D399).withOpacity(0.6) : const Color(0xFF059669),
+                          color: isDark ? const Color(0xFF34D399).withOpacity(0.6) : const Color(0xFF047857),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         shape: RoundedRectangleBorder(
@@ -995,7 +991,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     prefixIcon: Icon(
                       Icons.search_rounded,
                       size: 18,
-                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      color: AppTheme.getAccentGold(isDark),
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
@@ -1004,24 +1000,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           )
                         : null,
                     filled: true,
-                    fillColor: isDark ? AppTheme.celestialDeepIndigo : Colors.white,
+                    fillColor: isDark ? AppTheme.celestialDeepIndigo : const Color(0xFFF7F3EA),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFCBD5E1),
+                        color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFCBD5E1),
+                        color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                        color: AppTheme.getAccentGold(isDark),
                         width: 1.5,
                       ),
                     ),
@@ -1038,11 +1034,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             decoration: BoxDecoration(
               color: isDark
                   ? const Color(0xFF0A1020).withOpacity(0.7)
-                  : const Color(0xFFF8FAFC),
+                  : const Color(0xFFFAF6EE),
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(25)),
               border: Border(
                 top: BorderSide(
-                  color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFE2E8F0),
+                  color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
                   width: 1,
                 ),
               ),
@@ -1055,13 +1051,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppTheme.celestialStarGold.withOpacity(0.18),
+                        color: AppTheme.getAccentGold(isDark).withOpacity(0.18),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.bookmark_rounded,
                         size: 14,
-                        color: AppTheme.celestialStarGold,
+                        color: AppTheme.getAccentGold(isDark),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1071,7 +1067,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.8,
-                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                        color: AppTheme.getAccentGold(isDark),
                       ),
                     ),
                     const Spacer(),
@@ -1088,7 +1084,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           'All (${bookmarkProvider.bookmarks.length})',
                           style: TextStyle(
                             fontSize: 11,
-                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                            color: AppTheme.getAccentGold(isDark),
                           ),
                         ),
                       ),
@@ -1116,7 +1112,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                                color: AppTheme.getAccentGold(isDark),
                               ),
                             ),
                           ],
@@ -1126,7 +1122,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         lastRead.surahNameArabic,
                         style: GoogleFonts.scheherazadeNew(
                           fontSize: 22,
-                          color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                          color: AppTheme.getAccentGold(isDark),
                         ),
                       ),
                     ],
@@ -1142,7 +1138,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             : Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFE2E8F0),
+                          color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
                         ),
                       ),
                       child: Text(
@@ -1152,7 +1148,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         textDirection: TextDirection.rtl,
                         style: GoogleFonts.scheherazadeNew(
                           fontSize: 17,
-                          color: isDark ? Colors.white.withOpacity(0.9) : const Color(0xFF1E293B),
+                          color: isDark ? Colors.white.withOpacity(0.9) : const Color(0xFF0F172A),
                         ),
                       ),
                     ),
@@ -1163,8 +1159,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     icon: const Icon(Icons.play_arrow_rounded, size: 16),
                     label: const Text('Resume Reading'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                      foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
+                      backgroundColor: AppTheme.getAccentGold(isDark),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -1200,8 +1196,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         icon: const Icon(Icons.menu_book_rounded, size: 14),
                         label: const Text('Read Now'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                          foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
+                          backgroundColor: AppTheme.getAccentGold(isDark),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -1256,21 +1252,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           _applyFilters();
         });
       },
-      backgroundColor: isDark ? const Color(0xFF131F3A) : const Color(0xFFF1F5F9),
+      backgroundColor: isDark ? const Color(0xFF131F3A) : const Color(0xFFF6EFE2),
       selectedColor: isDark
           ? AppTheme.celestialStarGold.withOpacity(0.2)
-          : const Color(0xFF1E3A8A).withOpacity(0.12),
+          : AppTheme.lightStarGold.withOpacity(0.15),
       labelStyle: TextStyle(
         fontSize: 11,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         color: isSelected
-            ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ? (isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold)
+            : (isDark ? Colors.white70 : const Color(0xFF57534E)),
       ),
       side: BorderSide(
         color: isSelected
-            ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
-            : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFE2E8F0)),
+            ? (isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold)
+            : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
     );
@@ -1308,7 +1304,7 @@ class _SurahCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
                 color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
-                width: 1,
+                width: 1.1,
               ),
             ),
             child: Row(
@@ -1321,12 +1317,12 @@ class _SurahCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppTheme.celestialStarGold.withOpacity(0.12)
-                          : const Color(0xFF1E3A8A).withOpacity(0.08),
+                          : const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isDark
                             ? AppTheme.celestialStarGold.withOpacity(0.7)
-                            : const Color(0xFF1E3A8A).withOpacity(0.4),
+                            : const Color(0xFFF59E0B),
                         width: 1.2,
                       ),
                     ),
@@ -1338,7 +1334,7 @@ class _SurahCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                            color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
                           ),
                         ),
                       ),
@@ -1365,7 +1361,7 @@ class _SurahCard extends StatelessWidget {
                             '(${ArabicNumeralHelper.toArabic(chapter.id)})',
                             style: GoogleFonts.scheherazadeNew(
                               fontSize: 14,
-                              color: AppTheme.celestialStarGold,
+                              color: AppTheme.getAccentGold(isDark),
                             ),
                           ),
                         ],
@@ -1375,7 +1371,7 @@ class _SurahCard extends StatelessWidget {
                         '${chapter.translatedName} · ${chapter.versesCount} ayahs',
                         style: GoogleFonts.karla(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface.withOpacity(0.65),
+                          color: isDark ? Colors.white60 : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -1385,14 +1381,14 @@ class _SurahCard extends StatelessWidget {
                   chapter.nameArabic,
                   style: GoogleFonts.scheherazadeNew(
                     fontSize: 25,
-                    color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                    color: isDark ? AppTheme.celestialStarGold : const Color(0xFF0F172A),
                   ),
                 ),
                 const SizedBox(width: 6),
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 20,
-                  color: theme.colorScheme.onSurface.withOpacity(0.3),
+                  color: theme.colorScheme.onSurface.withOpacity(0.35),
                 ),
               ],
             ),
@@ -1432,6 +1428,7 @@ class _SurahGridCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
+              width: 1.1,
             ),
           ),
           child: Column(
@@ -1446,15 +1443,21 @@ class _SurahGridCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppTheme.celestialStarGold.withOpacity(0.12)
-                          : const Color(0xFF1E3A8A).withOpacity(0.08),
+                          : const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark
+                            ? AppTheme.celestialStarGold.withOpacity(0.6)
+                            : const Color(0xFFF59E0B),
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       '${chapter.id} · ${ArabicNumeralHelper.toArabic(chapter.id)}',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                        color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
                       ),
                     ),
                   ),
@@ -1462,7 +1465,7 @@ class _SurahGridCard extends StatelessWidget {
                     chapter.nameArabic,
                     style: GoogleFonts.scheherazadeNew(
                       fontSize: 20,
-                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF0F172A),
                     ),
                   ),
                 ],
@@ -1484,7 +1487,7 @@ class _SurahGridCard extends StatelessWidget {
                     '${chapter.versesCount} ayahs',
                     style: GoogleFonts.karla(
                       fontSize: 11,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: isDark ? Colors.white60 : const Color(0xFF64748B),
                     ),
                   ),
                 ],

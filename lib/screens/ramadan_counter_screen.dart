@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../utils/arabic_numerals.dart';
 import '../utils/ramadan_calculator.dart';
+import '../widgets/celestial_background.dart';
 
 class RamadanCounterScreen extends StatefulWidget {
   const RamadanCounterScreen({super.key});
@@ -56,7 +57,7 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
               color: isDark ? const Color(0xFF0F172A).withOpacity(0.7) : Colors.white.withOpacity(0.8),
               shape: BoxShape.circle,
               border: Border.all(
-                color: isDark ? AppTheme.celestialStarGold.withOpacity(0.5) : const Color(0xFFCBD5E1),
+                color: isDark ? AppTheme.celestialStarGold.withOpacity(0.5) : const Color(0xFFEADBCE),
               ),
             ),
             child: const Icon(Icons.arrow_back_rounded, size: 18),
@@ -71,110 +72,100 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // Background anime celestial atmosphere image
-          Positioned.fill(
-            child: Opacity(
-              opacity: isDark ? 0.35 : 0.18,
-              child: Image.asset(
-                'assets/images/anime_celestial_bg.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-
-          // Content
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Hero Header Card with Crescent & Lantern Glow
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
-                      gradient: isDark
-                          ? const LinearGradient(
-                              colors: [
-                                Color(0xFF172554),
-                                Color(0xFF0F172A),
-                                Color(0xFF1E1B4B),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                          : const LinearGradient(
-                              colors: [
-                                Color(0xFFFFFFFF),
-                                Color(0xFFF1F6FE),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                      border: Border.all(
-                        color: AppTheme.celestialStarGold.withOpacity(0.7),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.celestialStarGold.withOpacity(0.25),
-                          blurRadius: 28,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+      body: CelestialBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Hero Header Card with Crescent & Lantern Glow
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    gradient: isDark
+                        ? const LinearGradient(
+                            colors: [
+                              Color(0xFF172554),
+                              Color(0xFF0F172A),
+                              Color(0xFF1E1B4B),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : const LinearGradient(
+                            colors: [
+                              Colors.white,
+                              Color(0xFFFAF6EE),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                    border: Border.all(
+                      color: isDark
+                          ? AppTheme.celestialStarGold.withOpacity(0.7)
+                          : const Color(0xFFEADBCE),
+                      width: 1.5,
                     ),
-                    child: Column(
-                      children: [
-                        // Crescent emblem
-                        Container(
-                          width: 84,
-                          height: 84,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              colors: [
-                                AppTheme.celestialStarGold,
-                                AppTheme.celestialStarlightBlue,
-                                AppTheme.celestialWarmAmber,
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.celestialStarGold.withOpacity(0.5),
-                                blurRadius: 24,
-                              ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309))
+                            .withOpacity(isDark ? 0.25 : 0.10),
+                        blurRadius: 28,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // Crescent emblem
+                      Container(
+                        width: 84,
+                        height: 84,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppTheme.celestialStarGold,
+                              AppTheme.celestialStarlightBlue,
+                              AppTheme.celestialWarmAmber,
                             ],
                           ),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppTheme.celestialMidnight,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.celestialStarGold.withOpacity(0.5),
+                              blurRadius: 24,
                             ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.nightlight_round,
-                                size: 44,
-                                color: AppTheme.celestialStarGold,
-                              ),
+                          ],
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark ? AppTheme.celestialMidnight : Colors.white,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.nightlight_round,
+                              size: 44,
+                              color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 14),
+                      ),
+                      const SizedBox(height: 14),
 
-                        Text(
-                          'رَمَضَانُ الْمُبَارَك',
-                          style: GoogleFonts.scheherazadeNew(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
-                          ),
+                      Text(
+                        'رَمَضَانُ الْمُبَارَك',
+                        style: GoogleFonts.scheherazadeNew(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
                         ),
+                      ),
                         Text(
                           _countdown.hijriName,
                           style: GoogleFonts.cormorantGaramond(
@@ -353,7 +344,6 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
               ),
             ),
           ),
-        ],
       ),
     );
   }
@@ -373,13 +363,13 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSeconds
-                ? AppTheme.celestialStarGold
-                : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFCBD5E1)),
+                ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
+                : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFEADBCE)),
             width: isSeconds ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -393,15 +383,15 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: isSeconds
-                    ? AppTheme.celestialStarGold
-                    : (isDark ? Colors.white : const Color(0xFF1E3A8A)),
+                    ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309))
+                    : (isDark ? Colors.white : const Color(0xFF0F172A)),
               ),
             ),
             Text(
               arabicValue,
               style: GoogleFonts.scheherazadeNew(
                 fontSize: 14,
-                color: AppTheme.celestialStarGold.withOpacity(0.85),
+                color: isDark ? AppTheme.celestialStarGold.withOpacity(0.85) : const Color(0xFFB45309),
               ),
             ),
             const SizedBox(height: 2),
@@ -411,7 +401,7 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.8,
-                color: isDark ? Colors.white60 : Colors.black54,
+                color: isDark ? Colors.white60 : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -434,13 +424,13 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
           decoration: BoxDecoration(
             color: isDark
                 ? AppTheme.celestialStarGold.withOpacity(0.12)
-                : const Color(0xFF1E3A8A).withOpacity(0.08),
+                : const Color(0xFFFEF3C7),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
             size: 18,
-            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+            color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
           ),
         ),
         const SizedBox(width: 14),

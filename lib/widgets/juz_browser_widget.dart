@@ -50,12 +50,12 @@ class JuzBrowserWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isDark
                             ? AppTheme.celestialStarGold.withOpacity(0.12)
-                            : const Color(0xFF1E3A8A).withOpacity(0.08),
+                            : const Color(0xFFFEF3C7),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isDark
                               ? AppTheme.celestialStarGold.withOpacity(0.6)
-                              : const Color(0xFF1E3A8A).withOpacity(0.3),
+                              : const Color(0xFFF59E0B),
                           width: 1.2,
                         ),
                       ),
@@ -68,7 +68,7 @@ class JuzBrowserWidget extends StatelessWidget {
                               fontSize: 8,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.8,
-                              color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                              color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
                             ),
                           ),
                           Text(
@@ -76,7 +76,7 @@ class JuzBrowserWidget extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                              color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
                             ),
                           ),
                         ],
@@ -104,7 +104,7 @@ class JuzBrowserWidget extends StatelessWidget {
                                 '(${ArabicNumeralHelper.toArabic(juz.juzNumber)})',
                                 style: GoogleFonts.scheherazadeNew(
                                   fontSize: 14,
-                                  color: AppTheme.celestialStarGold,
+                                  color: AppTheme.getAccentGold(isDark),
                                 ),
                               ),
                             ],
@@ -129,7 +129,7 @@ class JuzBrowserWidget extends StatelessWidget {
                       style: GoogleFonts.scheherazadeNew(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFF0F172A),
                       ),
                     ),
                     const SizedBox(width: 8),
