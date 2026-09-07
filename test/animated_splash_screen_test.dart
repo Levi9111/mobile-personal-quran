@@ -39,11 +39,11 @@ void main() {
     }).toList();
 
     expect(images.contains('assets/images/anime_celestial_bg.jpg'), isTrue);
-    expect(images.contains('assets/images/logo_background.png'), isTrue);
-    expect(images.contains('assets/images/logo_clouds.png'), isTrue);
-    expect(images.contains('assets/images/logo_stars.png'), isTrue);
-    expect(images.contains('assets/images/logo_moon.png'), isTrue);
-    expect(images.contains('assets/images/logo_center_star.png'), isTrue);
+    expect(images.contains('assets/images/welcome_sky_bg.jpg'), isTrue);
+    expect(images.contains('assets/images/welcome_clouds.png'), isTrue);
+    expect(images.contains('assets/images/welcome_stars.png'), isTrue);
+    expect(images.contains('assets/images/welcome_moon.png'), isTrue);
+    expect(images.contains('assets/images/welcome_center_star.png'), isTrue);
 
     // Verify Title and Subtitle are present
     expect(find.text('نُور'), findsOneWidget);

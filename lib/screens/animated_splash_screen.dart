@@ -324,7 +324,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                 child: Transform.scale(
                                   scale: _bgScale.value,
                                   child: Image.asset(
-                                    'assets/images/logo_background.png',
+                                    'assets/images/welcome_sky_bg.jpg',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -338,7 +338,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                 child: Opacity(
                                   opacity: _cloudsOpacity.value,
                                   child: Image.asset(
-                                    'assets/images/logo_clouds.png',
+                                    'assets/images/welcome_clouds.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -352,7 +352,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                 child: Transform.scale(
                                   scale: _starsScale.value,
                                   child: Image.asset(
-                                    'assets/images/logo_stars.png',
+                                    'assets/images/welcome_stars.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -366,7 +366,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                 child: Transform.scale(
                                   scale: _moonScale.value,
                                   child: Image.asset(
-                                    'assets/images/logo_moon.png',
+                                    'assets/images/welcome_moon.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -377,12 +377,14 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                               // ------------------------------------------
                               Opacity(
                                 opacity: _starOpacity.value,
-                                child: Transform.rotate(
-                                  angle: _starRotation.value,
-                                  child: Transform.scale(
-                                    scale: _starScale.value,
+                                child: Transform.scale(
+                                  scale: _starScale.value,
+                                  alignment: const Alignment(0.068, -0.010),
+                                  child: Transform.rotate(
+                                    angle: _starRotation.value,
+                                    alignment: const Alignment(0.068, -0.010),
                                     child: Image.asset(
-                                      'assets/images/logo_center_star.png',
+                                      'assets/images/welcome_center_star.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -396,7 +398,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                                   child: Container(
                                     decoration: const BoxDecoration(
                                       gradient: RadialGradient(
-                                        center: Alignment(0.0, -0.07),
+                                        center: Alignment(0.068, -0.010),
                                         radius: 0.35,
                                         colors: [
                                           Color(0xFFFFF9C4),

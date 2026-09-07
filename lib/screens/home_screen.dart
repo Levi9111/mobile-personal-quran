@@ -48,7 +48,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       final bookmarkProvider = Provider.of<BookmarkProvider>(context, listen: false);
       final notifService = NotificationService();
       notifService.init().then((_) {
-        notifService.evaluateReminders(context, bookmarkProvider);
+        // Delay slightly so HomeScreen is fully painted before evaluating pop alerts
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (mounted) {
+            notifService.evaluateReminders(context, bookmarkProvider);
+          }
+        });
         notifService.startPeriodicChecks(context, bookmarkProvider);
       });
     });
@@ -226,7 +231,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        notifService.triggerTestNotification(context, bookmarkProvider, isDaily: false);
+                        Future.delayed(const Duration(milliseconds: 280), () {
+                          if (context.mounted) {
+                            notifService.triggerTestNotification(context, bookmarkProvider, isDaily: false);
+                          }
+                        });
                       },
                       icon: const Icon(Icons.notifications_none_rounded, size: 16),
                       label: const Text('Test 8-Hour Alert'),
@@ -238,7 +247,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     OutlinedButton.icon(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        notifService.triggerTestNotification(context, bookmarkProvider, isDaily: true);
+                        Future.delayed(const Duration(milliseconds: 280), () {
+                          if (context.mounted) {
+                            notifService.triggerTestNotification(context, bookmarkProvider, isDaily: true);
+                          }
+                        });
                       },
                       icon: const Icon(Icons.wb_twilight_rounded, size: 16),
                       label: const Text('Test Daily Alert'),

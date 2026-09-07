@@ -13,7 +13,7 @@ enum NotificationType {
 class CelestialNotificationBanner {
   static OverlayEntry? _currentEntry;
 
-  /// Shows a celestial floating in-app notification banner
+  /// Shows a sleek, compact celestial floating in-app notification banner
   static void show({
     required BuildContext context,
     required String title,
@@ -24,14 +24,25 @@ class CelestialNotificationBanner {
     NotificationType type = NotificationType.reminder8Hour,
     Duration duration = const Duration(seconds: 6),
   }) {
-    // Dismiss existing notification if any
+    // Dismiss any existing notification banner first
     dismiss();
 
-    final overlay = Overlay.maybeOf(context);
-    if (overlay == null) return;
+    // Use rootOverlay: true so it displays on top of all modal bottom sheets & routes
+    OverlayState? overlay;
+    try {
+      overlay = Overlay.of(context, rootOverlay: true);
+    } catch (_) {
+      overlay = Overlay.maybeOf(context);
+    }
+
+    if (overlay == null) {
+      debugPrint('Warning: No Overlay found to display CelestialNotificationBanner');
+      return;
+    }
 
     final entry = OverlayEntry(
-      builder: (context) => _BannerWidget(
+      builder: (ctx) => _CompactBannerWidget(
+        key: ValueKey('celestial_notif_${DateTime.now().microsecondsSinceEpoch}'),
         title: title,
         message: message,
         verseReference: verseReference,
@@ -51,12 +62,18 @@ class CelestialNotificationBanner {
   }
 
   static void dismiss() {
-    _currentEntry?.remove();
-    _currentEntry = null;
+    if (_currentEntry != null) {
+      try {
+        _currentEntry?.remove();
+      } catch (e) {
+        debugPrint('Error dismissing notification overlay: $e');
+      }
+      _currentEntry = null;
+    }
   }
 }
 
-class _BannerWidget extends StatefulWidget {
+class _CompactBannerWidget extends StatefulWidget {
   final String title;
   final String message;
   final String? verseReference;
@@ -66,7 +83,8 @@ class _BannerWidget extends StatefulWidget {
   final VoidCallback onDismiss;
   final Duration duration;
 
-  const _BannerWidget({
+  const _CompactBannerWidget({
+    super.key,
     required this.title,
     required this.message,
     this.verseReference,
@@ -78,10 +96,10 @@ class _BannerWidget extends StatefulWidget {
   });
 
   @override
-  State<_BannerWidget> createState() => _BannerWidgetState();
+  State<_CompactBannerWidget> createState() => _CompactBannerWidgetState();
 }
 
-class _BannerWidgetState extends State<_BannerWidget>
+class _CompactBannerWidgetState extends State<_CompactBannerWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
@@ -92,11 +110,11 @@ class _BannerWidgetState extends State<_BannerWidget>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 350),
     );
 
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, -1.2),
+      begin: const Offset(0, -1.0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
@@ -116,6 +134,7 @@ class _BannerWidgetState extends State<_BannerWidget>
   }
 
   void _dismissWithAnimation() {
+    if (!mounted) return;
     _controller.reverse().then((_) {
       widget.onDismiss();
     });
@@ -144,25 +163,25 @@ class _BannerWidgetState extends State<_BannerWidget>
   List<Color> _getGradientColors() {
     switch (widget.type) {
       case NotificationType.dailyMissed:
-        return [
-          const Color(0xFF1E1B4B).withOpacity(0.95),
-          const Color(0xFF311042).withOpacity(0.95),
+        return const [
+          Color(0xF01E1B4B),
+          Color(0xF0311042),
         ];
       case NotificationType.bookmarkSaved:
-        return [
-          const Color(0xFF064E3B).withOpacity(0.95),
-          const Color(0xFF0F172A).withOpacity(0.95),
+        return const [
+          Color(0xF0064E3B),
+          Color(0xF00F172A),
         ];
       case NotificationType.spiritualTip:
-        return [
-          const Color(0xFF1E3A8A).withOpacity(0.95),
-          const Color(0xFF172554).withOpacity(0.95),
+        return const [
+          Color(0xF01E3A8A),
+          Color(0xF0172554),
         ];
       case NotificationType.reminder8Hour:
       default:
-        return [
-          const Color(0xFF0F172A).withOpacity(0.96),
-          const Color(0xFF1E1B4B).withOpacity(0.96),
+        return const [
+          Color(0xF00A1128),
+          Color(0xF01E1B4B),
         ];
     }
   }
@@ -172,7 +191,7 @@ class _BannerWidgetState extends State<_BannerWidget>
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Positioned(
-      top: topPadding + 10,
+      top: topPadding + 6,
       left: 14,
       right: 14,
       child: SlideTransition(
@@ -180,172 +199,211 @@ class _BannerWidgetState extends State<_BannerWidget>
         child: FadeTransition(
           opacity: _opacityAnimation,
           child: Dismissible(
-            key: const Key('celestial_notification_key'),
+            key: widget.key ?? const Key('celestial_notif_banner'),
             direction: DismissDirection.up,
             onDismissed: (_) => widget.onDismiss(),
             child: Material(
               color: Colors.transparent,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: _getGradientColors(),
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: widget.onAction ?? widget.onDismiss,
+                behavior: HitTestBehavior.opaque,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
                       ),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: AppTheme.celestialStarGold.withOpacity(0.65),
-                        width: 1.4,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: _getGradientColors(),
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppTheme.celestialStarGold.withOpacity(0.55),
+                          width: 1.0,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.celestialStarGold.withOpacity(0.20),
+                            blurRadius: 16,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 4),
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.35),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.celestialStarGold.withOpacity(0.25),
-                          blurRadius: 24,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 6),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Luminous Anime Icon Orb
-                            Container(
-                              width: 42,
-                              height: 42,
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    AppTheme.celestialStarGold,
-                                    AppTheme.celestialStarlightBlue,
-                                  ],
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.celestialStarGold.withOpacity(0.5),
-                                    blurRadius: 10,
-                                  ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // 1. Compact Glowing Anime Emblem
+                          Container(
+                            width: 32,
+                            height: 32,
+                            padding: const EdgeInsets.all(1.5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [
+                                  AppTheme.celestialStarGold,
+                                  AppTheme.celestialStarlightBlue,
                                 ],
                               ),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(0xFF0F172A),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.celestialStarGold
+                                      .withOpacity(0.4),
+                                  blurRadius: 8,
                                 ),
-                                child: Icon(
-                                  _getIcon(),
-                                  size: 20,
-                                  color: AppTheme.celestialStarGold,
-                                ),
+                              ],
+                            ),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFF0F172A),
+                              ),
+                              child: Icon(
+                                _getIcon(),
+                                size: 16,
+                                color: AppTheme.celestialStarGold,
                               ),
                             ),
-                            const SizedBox(width: 14),
+                          ),
+                          const SizedBox(width: 10),
 
-                            // Content Details
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
+                          // 2. Compact Title & Single-Line Info
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
                                         widget.title,
                                         style: GoogleFonts.cormorantGaramond(
-                                          fontSize: 17,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          letterSpacing: 0.3,
                                         ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: _dismissWithAnimation,
-                                        child: Icon(
-                                          Icons.close_rounded,
-                                          size: 16,
-                                          color: Colors.white.withOpacity(0.6),
+                                    ),
+                                    if (widget.verseReference != null) ...[
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 1.5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.celestialStarGold
+                                              .withOpacity(0.18),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                            color: AppTheme.celestialStarGold
+                                                .withOpacity(0.4),
+                                            width: 0.6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          widget.verseReference!,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.celestialStarGold,
+                                          ),
                                         ),
                                       ),
                                     ],
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  widget.message,
+                                  style: GoogleFonts.karla(
+                                    fontSize: 11.5,
+                                    color: Colors.white.withOpacity(0.85),
+                                    height: 1.2,
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    widget.message,
-                                    style: GoogleFonts.karla(
-                                      fontSize: 13,
-                                      color: Colors.white.withOpacity(0.9),
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                  if (widget.verseReference != null) ...[
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.celestialStarGold.withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: AppTheme.celestialStarGold.withOpacity(0.4),
-                                          width: 0.8,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        widget.verseReference!,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppTheme.celestialStarGold,
-                                        ),
-                                      ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+
+                          // 3. Mini Action Pill Button
+                          if (widget.actionLabel != null)
+                            InkWell(
+                              onTap: widget.onAction,
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 9,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.celestialStarGold,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.celestialStarGold
+                                          .withOpacity(0.3),
+                                      blurRadius: 6,
                                     ),
                                   ],
-                                ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      widget.actionLabel!,
+                                      style: const TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.celestialMidnight,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 11,
+                                      color: AppTheme.celestialMidnight,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
 
-                        // Action Button if provided
-                        if (widget.actionLabel != null && widget.onAction != null) ...[
-                          const SizedBox(height: 10),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton.icon(
-                              onPressed: widget.onAction,
-                              icon: const Icon(Icons.arrow_forward_rounded, size: 14),
-                              label: Text(widget.actionLabel!),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.celestialStarGold,
-                                foregroundColor: AppTheme.celestialMidnight,
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          // 4. Quick Close Icon
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: _dismissWithAnimation,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Icon(
+                                Icons.close_rounded,
+                                size: 15,
+                                color: Colors.white.withOpacity(0.55),
                               ),
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ),
