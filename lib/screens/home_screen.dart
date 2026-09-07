@@ -329,12 +329,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       body: Stack(
         children: [
-          // Full-screen persistent celestial clouds & stars background
+          // Full-screen persistent anime celestial background
           Positioned.fill(
             child: Opacity(
-              opacity: isDark ? 0.28 : 0.14,
+              opacity: isDark ? 0.32 : 0.16,
               child: Image.asset(
-                'assets/images/celestial_clouds.jpg',
+                'assets/images/anime_celestial_bg.jpg',
                 fit: BoxFit.cover,
               ),
             ),

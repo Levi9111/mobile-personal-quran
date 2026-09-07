@@ -195,9 +195,9 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
         children: [
           Positioned.fill(
             child: Opacity(
-              opacity: theme.brightness == Brightness.dark ? 0.28 : 0.14,
+              opacity: theme.brightness == Brightness.dark ? 0.32 : 0.16,
               child: Image.asset(
-                'assets/images/celestial_clouds.jpg',
+                'assets/images/anime_celestial_bg.jpg',
                 fit: BoxFit.cover,
               ),
             ),

@@ -73,12 +73,12 @@ class _RamadanCounterScreenState extends State<RamadanCounterScreen> {
       ),
       body: Stack(
         children: [
-          // Background celestial atmosphere image
+          // Background anime celestial atmosphere image
           Positioned.fill(
             child: Opacity(
               opacity: isDark ? 0.35 : 0.18,
               child: Image.asset(
-                'assets/images/celestial_clouds.jpg',
+                'assets/images/anime_celestial_bg.jpg',
                 fit: BoxFit.cover,
               ),
             ),
