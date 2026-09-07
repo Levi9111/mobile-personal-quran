@@ -17,6 +17,7 @@ import '../widgets/tajweed_legend.dart';
 import '../widgets/tajweed_text.dart';
 import '../services/offline_audio_manager.dart';
 import '../widgets/offline_audio_sheet.dart';
+import '../widgets/celestial_background.dart';
 
 class SurahScreen extends StatefulWidget {
   final Chapter chapter;
@@ -135,7 +136,7 @@ class _SurahScreenState extends State<SurahScreen> {
           // Bookmark Sheet action
           IconButton(
             icon: const Icon(Icons.bookmarks_rounded, size: 20),
-            color: AppTheme.celestialStarGold,
+            color: AppTheme.getAccentGold(isDark),
             tooltip: 'View Bookmarks',
             onPressed: () => BookmarkSheet.show(context),
           ),
@@ -149,20 +150,20 @@ class _SurahScreenState extends State<SurahScreen> {
             icon: Icon(
               _tajweedEnabled ? Icons.remove_red_eye_outlined : Icons.visibility_off_outlined,
               size: 16,
-              color: theme.colorScheme.primary,
+              color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
             ),
             label: Text(
               _tajweedEnabled ? 'Colours on' : 'Colours off',
               style: TextStyle(
                 fontSize: 12,
-                color: theme.colorScheme.primary,
+                color: isDark ? AppTheme.celestialStarGold : AppTheme.lightStarGold,
               ),
             ),
           ),
           // Mushaf Page Mode Switcher
           IconButton(
             icon: const Icon(Icons.auto_stories_rounded, size: 20),
-            color: AppTheme.celestialStarGold,
+            color: AppTheme.getAccentGold(isDark),
             tooltip: 'Open Mushaf Page Mode',
             onPressed: () {
               Navigator.push(
@@ -176,7 +177,7 @@ class _SurahScreenState extends State<SurahScreen> {
           // Offline Audio Download Button
           IconButton(
             icon: const Icon(Icons.download_for_offline_outlined, size: 20),
-            color: AppTheme.celestialStarlightBlue,
+            color: AppTheme.getStarlightBlue(isDark),
             tooltip: 'Offline Audio Manager',
             onPressed: () async {
               final verses = await _versesFuture;
@@ -194,14 +195,8 @@ class _SurahScreenState extends State<SurahScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Opacity(
-              opacity: isDark ? 0.32 : 0.16,
-              child: Image.asset(
-                'assets/images/anime_celestial_bg.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+          const Positioned.fill(
+            child: CelestialBackground(),
           ),
           FutureBuilder<List<Verse>>(
             future: _versesFuture,
@@ -263,10 +258,11 @@ class _SurahScreenState extends State<SurahScreen> {
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
                                       )
-                                    : LinearGradient(
+                                    : const LinearGradient(
                                         colors: [
-                                          Colors.white.withOpacity(0.95),
-                                          const Color(0xFFF1F6FE).withOpacity(0.95),
+                                          Colors.white,
+                                          Color(0xFFFAF7F0),
+                                          Color(0xFFF5EEE1),
                                         ],
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
@@ -275,7 +271,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                 border: Border.all(
                                   color: isDark
                                       ? AppTheme.celestialStarGold.withOpacity(0.5)
-                                      : const Color(0xFFD6E2F0),
+                                      : AppTheme.lightBorder,
                                   width: 1.2,
                                 ),
                               ),
@@ -302,9 +298,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                       ],
                                     ),
                                     child: Container(
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppTheme.celestialMidnight,
+                                        color: isDark ? AppTheme.celestialMidnight : Colors.white,
                                       ),
                                       padding: const EdgeInsets.all(2),
                                       child: ClipOval(
@@ -322,7 +318,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       fontSize: 40,
                                       color: isDark
                                           ? AppTheme.celestialStarGold
-                                          : const Color(0xFF1E3A8A),
+                                          : const Color(0xFF0F172A),
                                     ),
                                   ),
                                   Text(
@@ -439,12 +435,12 @@ class _SurahScreenState extends State<SurahScreen> {
                                   decoration: BoxDecoration(
                                     color: isDark
                                         ? AppTheme.celestialStarGold.withOpacity(0.12)
-                                        : const Color(0xFF1E3A8A).withOpacity(0.08),
+                                        : const Color(0xFFFEF3C7),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: isDark
                                           ? AppTheme.celestialStarGold.withOpacity(0.5)
-                                          : const Color(0xFF1E3A8A).withOpacity(0.3),
+                                          : const Color(0xFFF59E0B),
                                       width: 1,
                                     ),
                                   ),
@@ -458,7 +454,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                           fontWeight: FontWeight.bold,
                                           color: isDark
                                               ? AppTheme.celestialStarGold
-                                              : const Color(0xFF1E3A8A),
+                                              : AppTheme.lightStarGold,
                                         ),
                                       ),
                                       if (isLastRead) ...[
@@ -492,7 +488,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         : Icons.bookmark_border_rounded,
                                     size: 22,
                                     color: (isBookmarked || isLastRead)
-                                        ? AppTheme.celestialStarGold
+                                        ? AppTheme.getAccentGold(isDark)
                                         : theme.colorScheme.onSurface.withOpacity(0.4),
                                   ),
                                   tooltip: 'Save Bookmark for Today',
@@ -533,7 +529,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     size: 21,
                                     color: isDark
                                         ? AppTheme.celestialStarGold.withOpacity(0.85)
-                                        : const Color(0xFF1E3A8A).withOpacity(0.75),
+                                        : const Color(0xFF0284C7),
                                   ),
                                   tooltip: 'Short Tafsir & Meaning',
                                   onPressed: () {
@@ -554,23 +550,23 @@ class _SurahScreenState extends State<SurahScreen> {
                                     isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                                     size: 16,
                                     color: isPlaying
-                                        ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                                        : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                                        ? Colors.white
+                                        : AppTheme.getAccentGold(isDark),
                                   ),
                                   label: Text(
                                     isPlaying ? 'Pause' : 'Play',
                                     style: TextStyle(
                                       color: isPlaying
-                                          ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                                          : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                                          ? Colors.white
+                                          : AppTheme.getAccentGold(isDark),
                                     ),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     backgroundColor: isPlaying
-                                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
+                                        ? AppTheme.getAccentGold(isDark)
                                         : Colors.transparent,
                                     side: BorderSide(
-                                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                                      color: AppTheme.getAccentGold(isDark),
                                       width: 1.2,
                                     ),
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

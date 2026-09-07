@@ -6,6 +6,7 @@ import '../models/important_verse.dart';
 import '../providers/important_verses_provider.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/celestial_background.dart';
 import '../widgets/important_verse_card.dart';
 
 class ImportantVersesScreen extends StatefulWidget {
@@ -191,24 +192,14 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Opacity(
-              opacity: theme.brightness == Brightness.dark ? 0.32 : 0.16,
-              child: Image.asset(
-                'assets/images/anime_celestial_bg.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          provider.isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryEmerald))
-              : CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    // Top Search & Hero Section
-                    SliverToBoxAdapter(
+      body: CelestialBackground(
+        child: provider.isLoading
+            ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryEmerald))
+            : CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // Top Search & Hero Section
+                  SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Column(
@@ -253,7 +244,13 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                           children: [
                             OutlinedButton.icon(
                               onPressed: () => _showOccasionFilterModal(context, provider),
-                              icon: const Icon(Icons.tune_rounded, size: 16, color: AppTheme.celestialStarGold),
+                              icon: Icon(
+                                Icons.tune_rounded,
+                                size: 16,
+                                color: theme.brightness == Brightness.dark
+                                    ? AppTheme.celestialStarGold
+                                    : const Color(0xFFB45309),
+                              ),
                               label: Text(
                                 provider.selectedOccasion == 'All'
                                     ? 'Filter Occasions'
@@ -266,10 +263,12 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                   color: provider.selectedOccasion != 'All'
-                                      ? AppTheme.celestialStarGold
+                                      ? (theme.brightness == Brightness.dark
+                                          ? AppTheme.celestialStarGold
+                                          : const Color(0xFFD97706))
                                       : (theme.brightness == Brightness.dark
                                           ? AppTheme.celestialBorderIndigo
-                                          : AppTheme.lightBorder),
+                                          : const Color(0xFFEADBCE)),
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -287,11 +286,13 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                                   _searchController.clear();
                                   provider.clearFilters();
                                 },
-                                child: const Text(
+                                child: Text(
                                   'Reset',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppTheme.celestialStarlightBlue,
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppTheme.celestialStarlightBlue
+                                        : const Color(0xFF0284C7),
                                   ),
                                 ),
                               ),
@@ -314,17 +315,21 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                               return ChoiceChip(
                                 label: Text(cat),
                                 selected: isSelected,
-                                selectedColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                                backgroundColor: isDark ? AppTheme.celestialDeepIndigo : Colors.white,
+                                selectedColor: isDark
+                                    ? AppTheme.celestialStarGold
+                                    : const Color(0xFFFEF3C7),
+                                backgroundColor: isDark
+                                    ? AppTheme.celestialDeepIndigo
+                                    : Colors.white,
                                 side: BorderSide(
                                   color: isSelected
-                                      ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
-                                      : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
+                                      ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
+                                      : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFEADBCE)),
                                 ),
                                 labelStyle: TextStyle(
                                   color: isSelected
-                                      ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                                      : theme.colorScheme.onSurface,
+                                      ? (isDark ? AppTheme.celestialMidnight : const Color(0xFF92400E))
+                                      : (isDark ? Colors.white70 : const Color(0xFF475569)),
                                   fontSize: 12,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -358,22 +363,25 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                                     )
                                   : const LinearGradient(
                                       colors: [
-                                        Color(0xFFFFFFFF),
-                                        Color(0xFFF1F6FE),
+                                        Colors.white,
+                                        Color(0xFFFAF6EE),
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.celestialStarGold.withOpacity(0.5),
+                                color: theme.brightness == Brightness.dark
+                                    ? AppTheme.celestialStarGold.withOpacity(0.5)
+                                    : const Color(0xFFEADBCE),
                                 width: 1.2,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: theme.brightness == Brightness.dark
-                                      ? AppTheme.celestialStarGold.withOpacity(0.12)
-                                      : const Color(0xFF94A3B8).withOpacity(0.12),
+                                  color: (theme.brightness == Brightness.dark
+                                          ? AppTheme.celestialStarGold
+                                          : const Color(0xFFB45309))
+                                      .withOpacity(theme.brightness == Brightness.dark ? 0.12 : 0.08),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
@@ -554,7 +562,6 @@ class _ImportantVersesScreenState extends State<ImportantVersesScreen> {
                       ),
               ],
             ),
-        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/tajweed.dart';
 import '../theme/app_theme.dart';
+import '../widgets/celestial_background.dart';
 import '../widgets/tajweed_text.dart';
 
 class TajweedGuideScreen extends StatelessWidget {
@@ -103,91 +104,92 @@ class TajweedGuideScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Opacity(
-              opacity: isDark ? 0.32 : 0.16,
-              child: Image.asset(
-                'assets/images/anime_celestial_bg.jpg',
-                fit: BoxFit.cover,
-              ),
+      body: CelestialBackground(
+        child: SafeArea(
+          bottom: true,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(context).padding.bottom + 36,
             ),
-          ),
-          SafeArea(
-            bottom: true,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                MediaQuery.of(context).padding.bottom + 36,
-              ),
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            physics: const BouncingScrollPhysics(),
+            child: Column(
               children: [
-                const Icon(Icons.auto_awesome, size: 12, color: AppTheme.celestialStarGold),
-                const SizedBox(width: 6),
-                Text(
-                  'LEARN TO RECITE',
-                  style: GoogleFonts.karla(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 3,
-                    color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const Icon(Icons.auto_awesome, size: 12, color: AppTheme.celestialStarGold),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '5 Tajweed Colour Rules',
-              style: GoogleFonts.cormorantGaramond(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Every coloured letter in the reader maps to an authentic tajweed rule family.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.karla(
-                fontSize: 13,
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            ...lessons.map((lesson) {
-              final rule = lesson["rule"] as TajweedRule;
-              final meta = ruleMetaMap[rule]!;
-              final conditions = lesson["conditions"] as List<String>;
-              final examples = lesson["examples"] as List<Map<String, String>>;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder,
-                    width: 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark ? const Color(0xFF020617).withOpacity(0.4) : Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 12,
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'LEARN TO RECITE',
+                      style: GoogleFonts.karla(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 3,
+                        color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 12,
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
                     ),
                   ],
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  '5 Tajweed Colour Rules',
+                  style: GoogleFonts.cormorantGaramond(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppTheme.celestialStarGold : const Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Every coloured letter in the reader maps to an authentic tajweed rule family.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.karla(
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                ...lessons.map((lesson) {
+                  final rule = lesson["rule"] as TajweedRule;
+                  final meta = ruleMetaMap[rule]!;
+                  final ruleColor = meta.resolveColor(isDark);
+                  final conditions = lesson["conditions"] as List<String>;
+                  final examples = lesson["examples"] as List<Map<String, String>>;
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: theme.cardTheme.color,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFEADBCE),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark
+                              ? const Color(0xFF020617).withOpacity(0.4)
+                              : Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -202,7 +204,7 @@ class TajweedGuideScreen extends StatelessWidget {
                               style: GoogleFonts.cormorantGaramond(
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
-                                color: meta.color,
+                                color: ruleColor,
                               ),
                             ),
                             Text(
@@ -234,9 +236,9 @@ class TajweedGuideScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: meta.color.withOpacity(0.1),
+                        color: ruleColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: meta.color.withOpacity(0.3)),
+                        border: Border.all(color: ruleColor.withOpacity(0.3)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +248,7 @@ class TajweedGuideScreen extends StatelessWidget {
                             style: GoogleFonts.karla(
                               fontSize: 9,
                               letterSpacing: 1.5,
-                              color: meta.color,
+                              color: ruleColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -255,7 +257,7 @@ class TajweedGuideScreen extends StatelessWidget {
                             lesson["letters"] as String,
                             style: GoogleFonts.scheherazadeNew(
                               fontSize: 22,
-                              color: meta.color,
+                              color: ruleColor,
                             ),
                           ),
                         ],
@@ -272,7 +274,7 @@ class TajweedGuideScreen extends StatelessWidget {
                                 width: 6,
                                 height: 6,
                                 decoration: BoxDecoration(
-                                  color: meta.color,
+                                  color: ruleColor,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -305,9 +307,15 @@ class TajweedGuideScreen extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surface,
+                              color: isDark
+                                  ? theme.colorScheme.surface
+                                  : const Color(0xFFFAF7F0),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: theme.colorScheme.outline),
+                              border: Border.all(
+                                color: isDark
+                                    ? theme.colorScheme.outline
+                                    : const Color(0xFFEADBCE),
+                              ),
                             ),
                             child: Column(
                               children: [
@@ -339,8 +347,7 @@ class TajweedGuideScreen extends StatelessWidget {
         ),
       ),
     ),
-  ],
-),
-    );
+  ),
+);
   }
 }

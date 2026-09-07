@@ -36,27 +36,27 @@ class ImportantVerseCard extends StatefulWidget {
 class _ImportantVerseCardState extends State<ImportantVerseCard> {
   bool _isExpanded = false;
 
-  Color _getCategoryColor(String category) {
+  Color _getCategoryColor(String category, bool isDark) {
     switch (category) {
       case 'Protection & Safety':
         return AppTheme.primaryEmerald; // Celestial Emerald
       case 'Tawheed & Faith':
-        return AppTheme.celestialStarGold; // Glowing Anime Star Gold
+        return isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309);
       case 'Patience & Perseverance':
-        return AppTheme.celestialStarlightBlue; // Starlight Sky
+        return isDark ? AppTheme.celestialStarlightBlue : const Color(0xFF0284C7);
       case 'Mercy & Forgiveness':
-        return AppTheme.celestialTwilightPurple; // Twilight Violet
+        return isDark ? AppTheme.celestialTwilightPurple : const Color(0xFF7C3AED);
       case 'Daily Recitation':
-        return const Color(0xFF06B6D4); // Cyan Starlight
+        return isDark ? const Color(0xFF06B6D4) : const Color(0xFF0891B2);
       case 'Quranic Duas':
       case 'Prophetic Prayers':
-        return AppTheme.celestialWarmAmber; // Radiant Amber
+        return isDark ? AppTheme.celestialWarmAmber : const Color(0xFFD97706);
       case 'Family & Parents':
-        return const Color(0xFFFB7185); // Celestial Rose
+        return isDark ? const Color(0xFFFB7185) : const Color(0xFFE11D48);
       case 'Knowledge & Wisdom':
-        return const Color(0xFF60A5FA); // Celestial Azure
+        return isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB);
       default:
-        return AppTheme.celestialStarGold;
+        return isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309);
     }
   }
 
@@ -227,27 +227,28 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
     final isFav = provider.isFavorite(widget.verse.id);
     final hasNote = provider.hasPersonalNote(widget.verse.verseKey);
     final personalNote = provider.getPersonalNote(widget.verse.verseKey);
-    final categoryColor = _getCategoryColor(widget.verse.category);
+    final categoryColor = _getCategoryColor(widget.verse.category, isDark);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: widget.isPlaying
-            ? (isDark ? const Color(0xFF16233F) : const Color(0xFFFEF9C3).withOpacity(0.4))
+            ? (isDark ? const Color(0xFF16233F) : const Color(0xFFFEF3C7).withOpacity(0.4))
             : theme.cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: widget.isPlaying
-              ? AppTheme.celestialStarGold
+              ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
               : isFav
-                  ? (isDark ? AppTheme.celestialStarGold.withOpacity(0.7) : const Color(0xFF1E3A8A).withOpacity(0.5))
-                  : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
+                  ? (isDark ? AppTheme.celestialStarGold.withOpacity(0.7) : const Color(0xFFD97706))
+                  : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFEADBCE)),
           width: widget.isPlaying ? 1.5 : 1,
         ),
         boxShadow: widget.isPlaying
             ? [
                 BoxShadow(
-                  color: AppTheme.celestialStarGold.withOpacity(0.25),
+                  color: (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309))
+                      .withOpacity(0.25),
                   blurRadius: 18,
                   spreadRadius: 1,
                 ),
@@ -294,12 +295,12 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppTheme.celestialStarGold.withOpacity(0.12)
-                        : const Color(0xFF1E3A8A).withOpacity(0.08),
+                        : const Color(0xFFFEF3C7),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark
                           ? AppTheme.celestialStarGold.withOpacity(0.5)
-                          : const Color(0xFF1E3A8A).withOpacity(0.3),
+                          : const Color(0xFFEADBCE),
                       width: 1,
                     ),
                   ),
@@ -314,7 +315,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     style: GoogleFonts.karla(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
                     ),
                   ),
                 ),
@@ -341,7 +342,7 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
               style: GoogleFonts.cormorantGaramond(
                 fontSize: 21,
                 fontWeight: FontWeight.bold,
-                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                color: isDark ? AppTheme.celestialStarGold : const Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 14),
@@ -376,22 +377,24 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     size: 16,
                     color: widget.isPlaying
                         ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                        : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                        : (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309)),
                   ),
                   label: Text(
                     widget.isPlaying ? 'Pause' : 'Recitation',
                     style: TextStyle(
                       color: widget.isPlaying
                           ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                          : (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A)),
+                          : (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309)),
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: widget.isPlaying
-                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A))
+                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309))
                         : Colors.transparent,
                     side: BorderSide(
-                      color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+                      color: isDark
+                          ? AppTheme.celestialStarGold
+                          : (widget.isPlaying ? const Color(0xFFB45309) : const Color(0xFFEADBCE)),
                       width: 1.2,
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -409,15 +412,15 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     hasNote ? Icons.edit_note_rounded : Icons.note_add_outlined,
                     size: 18,
                     color: hasNote
-                        ? AppTheme.celestialStarGold
+                        ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309))
                         : theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
                   tooltip: hasNote ? 'View / Edit Note' : 'Add Note',
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: hasNote
-                          ? AppTheme.celestialStarGold
-                          : (isDark ? AppTheme.celestialBorderIndigo : AppTheme.lightBorder),
+                          ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
+                          : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFEADBCE)),
                     ),
                     padding: const EdgeInsets.all(8),
                     shape: RoundedRectangleBorder(
