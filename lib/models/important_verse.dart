@@ -14,6 +14,8 @@ class ImportantVerse {
   final String reference;
   final String? audioUrl;
 
+  String get arabicText => textIndopak;
+
   const ImportantVerse({
     required this.id,
     required this.title,

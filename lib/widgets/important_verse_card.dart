@@ -4,11 +4,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
 import '../models/chapter.dart';
 import '../models/important_verse.dart';
+import '../models/verse.dart';
 import '../providers/important_verses_provider.dart';
 import '../screens/surah_screen.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/arabic_numerals.dart';
+import 'concise_tafsir_sheet.dart';
 import 'tajweed_text.dart';
 
 class ImportantVerseCard extends StatefulWidget {
@@ -621,18 +623,55 @@ class _ImportantVerseCardState extends State<ImportantVerseCard> {
                     const SizedBox(height: 14),
                   ],
 
-                  // "Read in Surah →" Button
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      onPressed: () => _navigateToSurah(context),
-                      icon: const Icon(Icons.menu_book_rounded, size: 16),
-                      label: Text('Read in Surah ${widget.verse.surahName} →'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: theme.colorScheme.primary,
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  // Actions Row: Short Tafsir & "Read in Surah →"
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {
+                          final parts = widget.verse.verseKey.split(':');
+                          final sId = int.tryParse(parts[0]) ?? 1;
+                          final aNum = parts.length > 1 ? (int.tryParse(parts[1]) ?? 1) : 1;
+                          final minimalChapter = Chapter(
+                            id: sId,
+                            nameSimple: widget.verse.surahName,
+                            nameComplex: widget.verse.surahName,
+                            nameArabic: '',
+                            versesCount: 0,
+                            revelationPlace: '',
+                            translatedName: '',
+                          );
+                          final minimalVerse = Verse(
+                            id: 0,
+                            verseNumber: aNum,
+                            verseKey: widget.verse.verseKey,
+                            textIndopak: widget.verse.arabicText,
+                            translationText: widget.verse.translation,
+                            audioUrl: widget.verse.audioUrl,
+                          );
+                          ConciseTafsirSheet.show(
+                            context,
+                            chapter: minimalChapter,
+                            verse: minimalVerse,
+                          );
+                        },
+                        icon: const Icon(Icons.lightbulb_outline_rounded, size: 16),
+                        label: const Text('Short Tafsir'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppTheme.celestialStarGold,
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
                       ),
-                    ),
+                      TextButton.icon(
+                        onPressed: () => _navigateToSurah(context),
+                        icon: const Icon(Icons.menu_book_rounded, size: 16),
+                        label: Text('Read in Surah ${widget.verse.surahName} →'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: theme.colorScheme.primary,
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
