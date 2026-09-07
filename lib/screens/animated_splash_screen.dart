@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
-/// AnimatedSplashScreen displays a cinematic layer-by-layer assembly
-/// of the Noor logo matching the user's specification:
-/// 1.1 Background is present first
-/// 1.2 Clouds appear floating in
-/// 1.3 Stars twinkle in and Crescent Moon appears
-/// 1.4 Center star bursts into the center of the moon
-/// 1.5 Built from extracted noor_logo.png components
+/// AnimatedSplashScreen displays a clean, elegant, and harmonious welcoming animation:
+/// - Soft celestial anime midnight background with radial glow
+/// - Smooth fade and scale-in of the iconic Noor logo
+/// - Gentle starlight aura pulse and subtle shimmer
+/// - Golden Arabic calligraphy 'نُور' with spaced 'N O O R'
+/// - Fast and non-intrusive: 2.2s total duration with instant tap-to-skip
 class AnimatedSplashScreen extends StatefulWidget {
   const AnimatedSplashScreen({super.key});
 
@@ -18,31 +20,11 @@ class AnimatedSplashScreen extends StatefulWidget {
 class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-
-  // Staggered interval animations for the 5 distinct stages
-  // 1. Background sky
-  late Animation<double> _bgOpacity;
-  late Animation<double> _bgScale;
-
-  // 2. Clouds
-  late Animation<double> _cloudsOpacity;
-  late Animation<Offset> _cloudsSlide;
-
-  // 3. Stars & Moon
-  late Animation<double> _starsOpacity;
-  late Animation<double> _starsScale;
-  late Animation<double> _moonOpacity;
-  late Animation<double> _moonScale;
-
-  // 4. Center Star at the center of the moon
-  late Animation<double> _starOpacity;
-  late Animation<double> _starScale;
-  late Animation<double> _starRotation;
-  late Animation<double> _flareOpacity;
-
-  // 5. Title & Subtitle text
-  late Animation<double> _titleOpacity;
-  late Animation<Offset> _titleSlide;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
+  late Animation<double> _textFadeAnimation;
+  late Animation<Offset> _textSlideAnimation;
 
   bool _navigated = false;
 
@@ -52,151 +34,58 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 2200),
     );
 
-    // 1. Background: 0.00 -> 0.22
-    _bgOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // Smooth logo fade-in: 0.0 -> 0.5
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.00, 0.20, curve: Curves.easeIn),
-      ),
-    );
-    _bgScale = Tween<double>(begin: 0.92, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.00, 0.25, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.45, curve: Curves.easeOutCubic),
       ),
     );
 
-    // 2. Clouds: 0.16 -> 0.44
-    _cloudsOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // Subtle scale-up from 0.88 to 1.0
+    _scaleAnimation = Tween<double>(begin: 0.88, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.16, 0.42, curve: Curves.easeInOut),
+        curve: const Interval(0.0, 0.55, curve: Curves.easeOutBack),
       ),
     );
-    _cloudsSlide = Tween<Offset>(
-      begin: const Offset(0.0, 0.12),
+
+    // Soft celestial starlight glow pulse
+    _glowAnimation = Tween<double>(begin: 0.2, end: 0.8).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 0.85, curve: Curves.easeInOut),
+      ),
+    );
+
+    // Typography fade and subtle slide up
+    _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.40, 0.80, curve: Curves.easeIn),
+      ),
+    );
+
+    _textSlideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.15),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.16, 0.44, curve: Curves.easeOutCubic),
+        curve: const Interval(0.40, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
-    // 3. Stars & Stardust: 0.32 -> 0.60
-    _starsOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.32, 0.58, curve: Curves.easeIn),
-      ),
-    );
-    _starsScale = Tween<double>(begin: 0.88, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.32, 0.60, curve: Curves.easeOut),
-      ),
-    );
+    _controller.forward();
 
-    // 3b. Crescent Moon: 0.46 -> 0.72
-    _moonOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.46, 0.70, curve: Curves.easeIn),
-      ),
-    );
-    _moonScale = Tween<double>(begin: 0.75, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.46, 0.72, curve: Curves.easeOutBack),
-      ),
-    );
-
-    // 4. Center Star: 0.66 -> 0.88
-    _starOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.66, 0.84, curve: Curves.easeIn),
-      ),
-    );
-    _starScale = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.66, 0.88, curve: Curves.elasticOut),
-      ),
-    );
-    _starRotation = Tween<double>(begin: -0.25, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.66, 0.86, curve: Curves.easeOutCubic),
-      ),
-    );
-    // Radiant light flare around star
-    _flareOpacity = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: 0.85)
-            .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 40,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.85, end: 0.15)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 60,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.70, 0.92),
-      ),
-    );
-
-    // 5. Title Text: 0.78 -> 1.00
-    _titleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.78, 0.98, curve: Curves.easeIn),
-      ),
-    );
-    _titleSlide = Tween<Offset>(
-      begin: const Offset(0.0, 0.25),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.78, 1.00, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    // Start animation and navigate when finished
-    _controller.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 350), () {
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
         _navigateToHome();
-      });
+      }
     });
-  }
-
-  void _navigateToHome() {
-    if (!_navigated && mounted) {
-      _navigated = true;
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 700),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const HomeScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeInOut,
-              ),
-              child: child,
-            );
-          },
-        ),
-      );
-    }
   }
 
   @override
@@ -205,19 +94,30 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     super.dispose();
   }
 
+  void _navigateToHome() {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 600),
+        pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final emblemSize = (size.width * 0.74).clamp(240.0, 320.0);
-
     return Scaffold(
-      backgroundColor: const Color(0xFF040A18),
+      backgroundColor: AppTheme.celestialMidnight,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _navigateToHome,
         child: Stack(
           children: [
-            // Full-screen anime celestial background with ambient glow
+            // 1. Full-screen celestial anime background with dark overlay
             Positioned.fill(
               child: Opacity(
                 opacity: 0.45,
@@ -228,24 +128,25 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               ),
             ),
 
-            // Top ambient nebula gradient overlay
+            // 2. Radial midnight vignette gradient
             Positioned.fill(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: RadialGradient(
-                    center: Alignment(0, -0.1),
-                    radius: 0.95,
+                    center: Alignment.center,
+                    radius: 1.1,
                     colors: [
-                      Color(0x284E75FF),
-                      Color(0x10132357),
-                      Color(0xDF040A18),
+                      Colors.transparent,
+                      AppTheme.celestialMidnight.withOpacity(0.55),
+                      AppTheme.celestialMidnight.withOpacity(0.92),
                     ],
+                    stops: const [0.0, 0.6, 1.0],
                   ),
                 ),
               ),
             ),
 
-            // Skip button in top right
+            // 3. Skip Button (Top-Right)
             SafeArea(
               child: Align(
                 alignment: Alignment.topRight,
@@ -253,28 +154,29 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
                   padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                   child: TextButton.icon(
                     onPressed: _navigateToHome,
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white70,
-                      backgroundColor: Colors.white.withOpacity(0.08),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
+                    icon: const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 14,
+                      color: AppTheme.celestialStarGold,
+                    ),
+                    label: Text(
+                      'Skip',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.celestialStarGold,
+                        letterSpacing: 0.5,
                       ),
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: AppTheme.celestialDeepIndigo.withOpacity(0.65),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: Colors.white.withOpacity(0.18),
-                          width: 0.8,
+                          color: AppTheme.celestialStarGold.withOpacity(0.4),
+                          width: 1,
                         ),
-                      ),
-                    ),
-                    icon: const Icon(Icons.arrow_forward_ios_rounded, size: 13),
-                    label: const Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.8,
                       ),
                     ),
                   ),
@@ -282,212 +184,132 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               ),
             ),
 
-            // Center Logo Assembly Stage
+            // 4. Centered Logo and Calligraphy
             Center(
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
                   return Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // The Animated Emblem with the 5 sequential layers
-                      Container(
-                        width: emblemSize,
-                        height: emblemSize,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(44),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFFD54F)
-                                  .withOpacity(0.20 * _starOpacity.value),
-                              blurRadius: 40,
-                              spreadRadius: 4,
+                      // Glowing Aura & Logo
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Celestial glowing ambient pulse
+                          Opacity(
+                            opacity: _glowAnimation.value,
+                            child: Container(
+                              width: 210,
+                              height: 210,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    AppTheme.celestialStarGold.withOpacity(0.35),
+                                    AppTheme.celestialStarlightBlue.withOpacity(0.18),
+                                    Colors.transparent,
+                                  ],
+                                  stops: const [0.0, 0.55, 1.0],
+                                ),
+                              ),
                             ),
-                            BoxShadow(
-                              color: const Color(0xFF1E3A8A)
-                                  .withOpacity(0.35 * _bgOpacity.value),
-                              blurRadius: 30,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(44),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              // ------------------------------------------
-                              // 1.1 BACKGROUND SKY (Present from beginning)
-                              // ------------------------------------------
-                              Opacity(
-                                opacity: _bgOpacity.value,
-                                child: Transform.scale(
-                                  scale: _bgScale.value,
-                                  child: Image.asset(
-                                    'assets/images/welcome_sky_bg.jpg',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-
-                              // ------------------------------------------
-                              // 1.2 CLOUDS (Float into scene)
-                              // ------------------------------------------
-                              SlideTransition(
-                                position: _cloudsSlide,
-                                child: Opacity(
-                                  opacity: _cloudsOpacity.value,
-                                  child: Image.asset(
-                                    'assets/images/welcome_clouds.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-
-                              // ------------------------------------------
-                              // 1.3 STARS & STARDUST (Twinkling)
-                              // ------------------------------------------
-                              Opacity(
-                                opacity: _starsOpacity.value,
-                                child: Transform.scale(
-                                  scale: _starsScale.value,
-                                  child: Image.asset(
-                                    'assets/images/welcome_stars.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-
-                              // ------------------------------------------
-                              // 1.3b CRESCENT MOON (Glides and scales up)
-                              // ------------------------------------------
-                              Opacity(
-                                opacity: _moonOpacity.value,
-                                child: Transform.scale(
-                                  scale: _moonScale.value,
-                                  child: Image.asset(
-                                    'assets/images/welcome_moon.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-
-                              // ------------------------------------------
-                              // 1.4 CENTER STAR (At the center of the moon)
-                              // ------------------------------------------
-                              Opacity(
-                                opacity: _starOpacity.value,
-                                child: Transform.scale(
-                                  scale: _starScale.value,
-                                  alignment: const Alignment(0.068, -0.010),
-                                  child: Transform.rotate(
-                                    angle: _starRotation.value,
-                                    alignment: const Alignment(0.068, -0.010),
-                                    child: Image.asset(
-                                      'assets/images/welcome_center_star.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              // Radiant Starburst Bloom Flash
-                              if (_flareOpacity.value > 0.01)
-                                Opacity(
-                                  opacity: _flareOpacity.value,
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      gradient: RadialGradient(
-                                        center: Alignment(0.068, -0.010),
-                                        radius: 0.35,
-                                        colors: [
-                                          Color(0xFFFFF9C4),
-                                          Color(0x80FFD54F),
-                                          Colors.transparent,
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
                           ),
-                        ),
+
+                          // Noor Anime Logo
+                          Opacity(
+                            opacity: _fadeAnimation.value,
+                            child: Transform.scale(
+                              scale: _scaleAnimation.value,
+                              child: Container(
+                                width: 154,
+                                height: 154,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.celestialStarGold.withOpacity(0.28),
+                                      blurRadius: 28,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/images/noor_logo.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 28),
 
-                      // ------------------------------------------
-                      // 1.5 TITLE & SUBTITLE
-                      // ------------------------------------------
-                      SlideTransition(
-                        position: _titleSlide,
-                        child: Opacity(
-                          opacity: _titleOpacity.value,
+                      // Typography: Arabic Calligraphy & Subtitles
+                      Opacity(
+                        opacity: _textFadeAnimation.value,
+                        child: SlideTransition(
+                          position: _textSlideAnimation,
                           child: Column(
                             children: [
-                              // Arabic Calligraphy with golden glow
+                              // Arabic Calligraphy
                               Text(
                                 'نُور',
-                                style: TextStyle(
-                                  fontFamily: 'serif',
-                                  fontSize: 34,
+                                style: GoogleFonts.amiri(
+                                  fontSize: 42,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFFFFE082),
-                                  letterSpacing: 4,
+                                  color: AppTheme.celestialStarGold,
+                                  letterSpacing: 2,
                                   shadows: [
                                     Shadow(
-                                      color: const Color(0xFFFFD54F)
-                                          .withOpacity(0.6),
-                                      blurRadius: 18,
+                                      color: AppTheme.celestialStarGold.withOpacity(0.6),
+                                      blurRadius: 16,
                                     ),
                                   ],
                                 ),
                               ),
+
                               const SizedBox(height: 4),
 
-                              // English Name
+                              // Spaced Latin Subtitle
                               Text(
                                 'N O O R',
-                                style: TextStyle(
-                                  fontSize: 20,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.white.withOpacity(0.95),
-                                  letterSpacing: 8,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.white.withOpacity(0.3),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
+                                  letterSpacing: 6,
+                                  color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 6),
 
-                              // Subtitle
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
+                              const SizedBox(height: 8),
+
+                              // Tagline
+                              Text(
+                                'My Personal Quran',
+                                style: GoogleFonts.karla(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: 1.2,
+                                  color: AppTheme.celestialStarlightBlue.withOpacity(0.9),
                                 ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981)
-                                      .withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: const Color(0xFF10B981)
-                                        .withOpacity(0.35),
-                                    width: 0.8,
-                                  ),
-                                ),
-                                child: const Text(
-                                  'My Personal Quran',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xFF6EE7B7),
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
+                              ),
+
+                              const SizedBox(height: 18),
+
+                              // Delicate spiritual dots
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildDot(AppTheme.celestialStarGold, 4),
+                                  const SizedBox(width: 8),
+                                  _buildDot(AppTheme.celestialStarlightBlue, 6),
+                                  const SizedBox(width: 8),
+                                  _buildDot(AppTheme.celestialStarGold, 4),
+                                ],
                               ),
                             ],
                           ),
@@ -500,6 +322,23 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDot(Color color, double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.6),
+            blurRadius: 4,
+          ),
+        ],
       ),
     );
   }

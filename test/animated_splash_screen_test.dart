@@ -21,13 +21,13 @@ void main() {
     );
   }
 
-  testWidgets('AnimatedSplashScreen renders all 5 logo layers and anime background', (WidgetTester tester) async {
+  testWidgets('AnimatedSplashScreen renders logo, anime background, and title', (WidgetTester tester) async {
     await tester.pumpWidget(createSplashWidget());
 
     // Initially pumped
     expect(find.byType(AnimatedSplashScreen), findsOneWidget);
 
-    // Verify all 5 layer image assets and anime background are present in the widget tree
+    // Verify logo and anime celestial background are present in the widget tree
     final imageFinders = find.byType(Image);
     expect(imageFinders, findsWidgets);
 
@@ -39,11 +39,7 @@ void main() {
     }).toList();
 
     expect(images.contains('assets/images/anime_celestial_bg.jpg'), isTrue);
-    expect(images.contains('assets/images/welcome_sky_bg.jpg'), isTrue);
-    expect(images.contains('assets/images/welcome_clouds.png'), isTrue);
-    expect(images.contains('assets/images/welcome_stars.png'), isTrue);
-    expect(images.contains('assets/images/welcome_moon.png'), isTrue);
-    expect(images.contains('assets/images/welcome_center_star.png'), isTrue);
+    expect(images.contains('assets/images/noor_logo.png'), isTrue);
 
     // Verify Title and Subtitle are present
     expect(find.text('نُور'), findsOneWidget);
