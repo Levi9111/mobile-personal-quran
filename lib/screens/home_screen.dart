@@ -279,14 +279,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                           labelColor: isDark ? AppTheme.celestialMidnight : Colors.white,
                           unselectedLabelColor: isDark ? Colors.white70 : const Color(0xFF64748B),
-                          labelStyle: GoogleFonts.karla(fontWeight: FontWeight.bold, fontSize: 13),
+                          labelStyle: GoogleFonts.karla(fontWeight: FontWeight.bold, fontSize: 12),
+                          unselectedLabelStyle: GoogleFonts.karla(fontWeight: FontWeight.w600, fontSize: 12),
+                          labelPadding: EdgeInsets.zero,
                           tabs: const [
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.menu_book_rounded, size: 15),
-                                  SizedBox(width: 6),
+                                  Icon(Icons.menu_book_rounded, size: 14),
+                                  SizedBox(width: 4),
                                   Text('Surahs'),
                                 ],
                               ),
@@ -295,8 +297,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.auto_stories_rounded, size: 15),
-                                  SizedBox(width: 6),
+                                  Icon(Icons.auto_stories_rounded, size: 14),
+                                  SizedBox(width: 4),
                                   Text('30 Juz'),
                                 ],
                               ),
@@ -305,21 +307,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.bookmark_rounded, size: 15),
-                                  SizedBox(width: 6),
-                                  Text('Bookmarks'),
+                                  Icon(Icons.bookmark_rounded, size: 14),
+                                  SizedBox(width: 4),
+                                  Text('Saved'),
                                 ],
                               ),
                             ),
                             Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.settings_rounded, size: 15),
-                                  SizedBox(width: 6),
-                                  Text('Settings'),
-                                ],
-                              ),
+                              icon: Icon(Icons.settings_rounded, size: 19),
                             ),
                           ],
                         ),

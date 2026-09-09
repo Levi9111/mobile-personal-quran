@@ -327,9 +327,7 @@ class _MushafScreenState extends State<MushafScreen> {
                   14,
                   10,
                   14,
-                  _selectedVerse != null
-                      ? MediaQuery.of(context).padding.bottom + 90
-                      : MediaQuery.of(context).padding.bottom + 40,
+                  MediaQuery.of(context).padding.bottom + 85,
                 ),
                 children: [
                   // SINGLE SOLID OPAQUE CARD CONTAINING ALL VERSES (Like Surah Al-Falaq & An-Nas)
@@ -356,18 +354,15 @@ class _MushafScreenState extends State<MushafScreen> {
                         // 1. Ornate Surah Header Frame
                         _buildMushafSurahHeader(chapter, isDark),
 
-                        // 2. Full Surah Audio Recitation Button Bar
-                        _buildAudioControlBanner(chapter, isDark),
-
-                        // 3. Bismillah Banner (except Surah 9 At-Tawbah)
+                        // 2. Bismillah Banner (except Surah 9 At-Tawbah)
                         if (chapter.id != 9) ...[
-                          _buildBismillahBanner(chapter, isDark),
                           const SizedBox(height: 10),
+                          _buildBismillahBanner(chapter, isDark),
                         ],
 
-                        // 4. CONTINUOUS MUSHAF TEXT (All verses laid out sequentially inside one card)
+                        // 3. CONTINUOUS MUSHAF TEXT (All verses laid out sequentially inside one card)
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
+                          padding: const EdgeInsets.fromLTRB(18, 14, 18, 20),
                           child: Directionality(
                             textDirection: TextDirection.rtl,
                             child: Text.rich(
@@ -384,7 +379,7 @@ class _MushafScreenState extends State<MushafScreen> {
                           ),
                         ),
 
-                        // 5. Ornate End of Surah Rosette / Seal
+                        // 4. Ornate End of Surah Rosette / Seal
                         _buildEndOfSurahSeal(chapter, isDark),
                         const SizedBox(height: 18),
                       ],
@@ -393,19 +388,17 @@ class _MushafScreenState extends State<MushafScreen> {
                 ],
               ),
 
-              // 3. Compact Ayah Bookmark Bar (Displays when any verse is tapped)
-              if (_selectedVerse != null)
-                Positioned(
-                  left: 14,
-                  right: 14,
-                  bottom: MediaQuery.of(context).padding.bottom + 12,
-                  child: _buildAyahBookmarkBar(
-                    verse: _selectedVerse!,
-                    chapter: chapter,
-                    isDark: isDark,
-                    bookmarkProvider: bookmarkProvider,
-                  ),
+              // 3. DOCKED BOTTOM CARD (Houses Play button with Play/Pause text + Ayah Bookmark feature)
+              Positioned(
+                left: 14,
+                right: 14,
+                bottom: MediaQuery.of(context).padding.bottom + 12,
+                child: _buildBottomDockedBar(
+                  chapter: chapter,
+                  isDark: isDark,
+                  bookmarkProvider: bookmarkProvider,
                 ),
+              ),
             ],
           );
         },
@@ -473,89 +466,7 @@ class _MushafScreenState extends State<MushafScreen> {
     );
   }
 
-  /// 2. Audio Control Banner - Full Surah Recitation (Feature 8.1)
-  Widget _buildAudioControlBanner(Chapter chapter, bool isDark) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF16233F) : const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _isPlaying
-              ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
-              : (isDark ? AppTheme.celestialBorderIndigo : const Color(0xFFE2E8F0)),
-          width: _isPlaying ? 1.5 : 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Play/Pause Full Surah Button
-          ElevatedButton.icon(
-            onPressed: _toggleFullSurahAudio,
-            icon: Icon(
-              _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              size: 20,
-            ),
-            label: Text(
-              _isPlaying ? 'Pause Full Surah' : 'Play Full Audio',
-              style: GoogleFonts.karla(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-              foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 0,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Reciter & duration text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Mishary Rashid Alafasy',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.karla(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                ),
-                Text(
-                  _isPlaying
-                      ? '${_formatDuration(_currentPosition)} / ${_formatDuration(_totalDuration)}'
-                      : 'Complete Surah Recitation',
-                  style: GoogleFonts.karla(
-                    fontSize: 11,
-                    color: isDark ? Colors.white60 : const Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (_isPlaying)
-            IconButton(
-              icon: const Icon(Icons.stop_rounded, size: 20),
-              color: Colors.redAccent,
-              tooltip: 'Stop Recitation',
-              onPressed: _stopAudio,
-            ),
-        ],
-      ),
-    );
-  }
-
-  /// 3. Bismillah Banner
+  /// 2. Bismillah Banner
   Widget _buildBismillahBanner(Chapter chapter, bool isDark) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -583,7 +494,7 @@ class _MushafScreenState extends State<MushafScreen> {
     );
   }
 
-  /// 4. CONTINUOUS MUSHAF SPANS (All verses flowing in one card)
+  /// 3. CONTINUOUS MUSHAF SPANS (All verses flowing in one card with delicate small bookmark stars)
   List<InlineSpan> _buildContinuousVerseSpans({
     required List<Verse> verses,
     required Chapter chapter,
@@ -638,13 +549,12 @@ class _MushafScreenState extends State<MushafScreen> {
         );
       }
 
-      // Traditional Ayah End Symbol ۝ with Arabic Number & Bookmarked Star
+      // Traditional Ayah End Symbol ۝ with Arabic Number
       final arabicNumber = ArabicNumeralHelper.toArabicDigits(verse.verseNumber.toString());
-      final ayahStopText = isBookmarked ? ' ۝$arabicNumber ⭐ ' : ' ۝$arabicNumber ';
 
       spans.add(
         TextSpan(
-          text: ayahStopText,
+          text: ' ۝$arabicNumber ',
           recognizer: recognizer,
           style: GoogleFonts.scheherazadeNew(
             fontSize: 22,
@@ -659,12 +569,27 @@ class _MushafScreenState extends State<MushafScreen> {
           ),
         ),
       );
+
+      // Delicate smaller bookmark star (Requirement 4)
+      if (isBookmarked) {
+        spans.add(
+          TextSpan(
+            text: '⭐ ',
+            recognizer: recognizer,
+            style: TextStyle(
+              fontSize: 10, // Small, delicate golden star accent
+              color: AppTheme.celestialStarGold,
+              backgroundColor: isSelected ? highlightBg : null,
+            ),
+          ),
+        );
+      }
     }
 
     return spans;
   }
 
-  /// 5. Ornate End of Surah Seal
+  /// 4. Ornate End of Surah Seal
   Widget _buildEndOfSurahSeal(Chapter chapter, bool isDark) {
     return Center(
       child: Container(
@@ -709,20 +634,22 @@ class _MushafScreenState extends State<MushafScreen> {
     );
   }
 
-  /// Floating Ayah Action & Bookmark Bar (Feature 8.2)
-  Widget _buildAyahBookmarkBar({
-    required Verse verse,
+  /// 5. DOCKED BOTTOM CARD: Contains Play button with Play/Pause text + Bookmark Feature (Requirements 2, 3, 8)
+  Widget _buildBottomDockedBar({
     required Chapter chapter,
     required bool isDark,
     required BookmarkProvider bookmarkProvider,
   }) {
-    final isBookmarked = bookmarkProvider.isBookmarked(chapter.id, verse.verseNumber);
+    final selected = _selectedVerse;
+    final isBookmarked = selected != null
+        ? bookmarkProvider.isBookmarked(chapter.id, selected.verseNumber)
+        : false;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white, // Solid opaque
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: isDark
               ? AppTheme.celestialStarGold.withOpacity(0.5)
@@ -739,74 +666,129 @@ class _MushafScreenState extends State<MushafScreen> {
       ),
       child: Row(
         children: [
-          // Ayah reference badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppTheme.celestialStarGold.withOpacity(0.15)
-                  : const Color(0xFFFEF3C7),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              'Ayah ${chapter.id}:${verse.verseNumber}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          // Translation or Surah snippet
-          Expanded(
-            child: Text(
-              verse.translationText.isNotEmpty
-                  ? verse.translationText
-                  : 'Surah ${chapter.nameSimple}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.karla(
-                fontSize: 12,
-                color: isDark ? Colors.white70 : const Color(0xFF475569),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Bookmark Button (Feature 8.2 - Synced with non-Mushaf mode)
+          // Play / Pause Full Audio Button (Requirements 2 & 3)
           ElevatedButton.icon(
-            onPressed: () => _toggleBookmark(verse),
+            onPressed: _toggleFullSurahAudio,
             icon: Icon(
-              isBookmarked ? Icons.bookmark_added_rounded : Icons.bookmark_border_rounded,
-              size: 15,
+              _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              size: 18,
             ),
             label: Text(
-              isBookmarked ? 'Bookmarked' : 'Bookmark',
-              style: const TextStyle(fontSize: 12),
+              _isPlaying ? 'Pause' : 'Play',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isBookmarked
-                  ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
-                  : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9)),
-              foregroundColor: isBookmarked
-                  ? (isDark ? AppTheme.celestialMidnight : Colors.white)
-                  : (isDark ? Colors.white : const Color(0xFF1E293B)),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
+              foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
               ),
               elevation: 0,
             ),
           ),
-          const SizedBox(width: 4),
-          IconButton(
-            icon: const Icon(Icons.close_rounded, size: 18),
-            onPressed: () {
-              setState(() {
-                _selectedVerse = null;
-              });
-            },
+          const SizedBox(width: 10),
+
+          // Context display: Selected Ayah details or Full recitation indicator
+          Expanded(
+            child: selected != null
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ayah ${chapter.id}:${selected.verseNumber}',
+                        style: GoogleFonts.karla(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: isDark ? AppTheme.celestialStarGold : const Color(0xFFB45309),
+                        ),
+                      ),
+                      Text(
+                        selected.translationText.isNotEmpty
+                            ? selected.translationText
+                            : chapter.nameSimple,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.karla(
+                          fontSize: 11,
+                          color: isDark ? Colors.white60 : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _isPlaying ? 'Mishary Rashid Alafasy' : 'Full Surah Recitation',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.karla(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        ),
+                      ),
+                      Text(
+                        _isPlaying
+                            ? '${_formatDuration(_currentPosition)} / ${_formatDuration(_totalDuration)}'
+                            : 'Tap any ayah to bookmark',
+                        style: GoogleFonts.karla(
+                          fontSize: 11,
+                          color: isDark ? Colors.white60 : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
+          const SizedBox(width: 8),
+
+          // Bookmark Action Button (Synced with non-Mushaf mode)
+          if (selected != null) ...[
+            ElevatedButton.icon(
+              onPressed: () => _toggleBookmark(selected),
+              icon: Icon(
+                isBookmarked ? Icons.bookmark_added_rounded : Icons.bookmark_border_rounded,
+                size: 14,
+              ),
+              label: Text(
+                isBookmarked ? 'Bookmarked' : 'Bookmark',
+                style: const TextStyle(fontSize: 12),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isBookmarked
+                    ? (isDark ? AppTheme.celestialStarGold : const Color(0xFFD97706))
+                    : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9)),
+                foregroundColor: isBookmarked
+                    ? (isDark ? AppTheme.celestialMidnight : Colors.white)
+                    : (isDark ? Colors.white : const Color(0xFF1E293B)),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close_rounded, size: 18),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () {
+                setState(() {
+                  _selectedVerse = null;
+                });
+              },
+            ),
+          ] else ...[
+            IconButton(
+              icon: const Icon(Icons.bookmarks_rounded, size: 20),
+              color: AppTheme.getAccentGold(isDark),
+              tooltip: 'View Bookmarks',
+              onPressed: () => BookmarkSheet.show(context),
+            ),
+          ],
         ],
       ),
     );

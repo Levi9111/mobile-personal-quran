@@ -80,9 +80,8 @@ void main() {
     expect(find.text('سُورَةُ الفاتحة'), findsWidgets);
     expect(find.text('بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ'), findsOneWidget);
 
-    // Verify Full Audio recitation button is present
-    expect(find.text('Play Full Audio'), findsOneWidget);
-    expect(find.text('Mishary Rashid Alafasy'), findsOneWidget);
+    // Verify Full Audio play button in bottom docked card
+    expect(find.text('Play'), findsOneWidget);
 
     // Verify End of Surah seal is rendered
     expect(find.textContaining('خَتْمُ سُورَةِ الفاتحة'), findsOneWidget);
