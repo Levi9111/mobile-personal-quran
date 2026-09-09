@@ -14,6 +14,7 @@ import '../widgets/juz_browser_widget.dart';
 import '../widgets/ramadan_countdown_card.dart';
 import 'important_verses_screen.dart';
 import 'mushaf_screen.dart';
+import 'settings_tab.dart';
 import 'surah_screen.dart';
 import 'tajweed_guide_screen.dart';
 import '../widgets/celestial_background.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadChapters();
     _searchController.addListener(_applyFilters);
 
@@ -120,155 +121,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
-  void _showNotificationSettingsModal() {
-    final notifService = NotificationService();
-    final bookmarkProvider = Provider.of<BookmarkProvider>(context, listen: false);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => SafeArea(
-          bottom: true,
-          child: Container(
-            padding: EdgeInsets.fromLTRB(
-              22,
-              20,
-              22,
-              MediaQuery.of(ctx).padding.bottom + 20,
-            ),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-              border: Border.all(
-                color: isDark ? AppTheme.celestialStarGold.withOpacity(0.4) : const Color(0xFFE2E8F0),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white24 : Colors.black12,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.notifications_active_rounded, color: AppTheme.celestialStarGold),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Reading Reminders & Alerts',
-                      style: GoogleFonts.cormorantGaramond(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Receive recitation reminders every 8 hours, and a daily pop notification if no verse was read today.',
-                  style: GoogleFonts.karla(
-                    fontSize: 13,
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Quiet hours badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E1B4B).withOpacity(0.7) : const Color(0xFFEFF6FF),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: AppTheme.celestialStarGold.withOpacity(0.35),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.nightlight_round, size: 16, color: AppTheme.celestialStarGold),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Quiet Hours: 10:00 PM – 5:00 AM (reminders muted automatically)',
-                          style: GoogleFonts.karla(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('8-Hour Reminder to Continue'),
-                  subtitle: const Text('Displays the exact last verse read (e.g. 2:255 • ٢:٢٥٥)'),
-                  value: notifService.reminder8HourEnabled,
-                  activeColor: AppTheme.celestialStarGold,
-                  onChanged: (val) async {
-                    await notifService.set8HourReminderEnabled(val);
-                    setModalState(() {});
-                  },
-                ),
-                const SizedBox(height: 14),
-
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        Future.delayed(const Duration(milliseconds: 280), () {
-                          if (context.mounted) {
-                            notifService.triggerTestNotification(context, bookmarkProvider, isDaily: false);
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.notifications_none_rounded, size: 16),
-                      label: const Text('Test 8-Hour Alert'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? AppTheme.celestialStarGold : const Color(0xFF1E3A8A),
-                        foregroundColor: isDark ? AppTheme.celestialMidnight : Colors.white,
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        Future.delayed(const Duration(milliseconds: 280), () {
-                          if (context.mounted) {
-                            notifService.triggerTestNotification(context, bookmarkProvider, isDaily: true);
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.wb_twilight_rounded, size: 16),
-                      label: const Text('Test Daily Alert'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -316,11 +168,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_outlined, color: AppTheme.getAccentGold(isDark)),
-            tooltip: 'Reading Reminders',
-            onPressed: _showNotificationSettingsModal,
-          ),
-          IconButton(
             icon: Icon(Icons.stars_rounded, color: AppTheme.getAccentGold(isDark)),
             tooltip: 'Important Verses & Duas',
             onPressed: () {
@@ -331,19 +178,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
               );
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.cloud_sync_rounded, color: AppTheme.getAccentGold(isDark)),
-            tooltip: 'Backup & Restore Data',
-            onPressed: () => DataBackupSheet.show(context),
-          ),
-          IconButton(
-            icon: Icon(
-              isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-              color: AppTheme.getAccentGold(isDark),
-            ),
-            onPressed: () => themeProvider.toggleTheme(),
-            tooltip: 'Toggle Theme',
           ),
           const SizedBox(width: 8),
         ],
@@ -474,6 +308,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   Icon(Icons.bookmark_rounded, size: 15),
                                   SizedBox(width: 6),
                                   Text('Bookmarks'),
+                                ],
+                              ),
+                            ),
+                            Tab(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.settings_rounded, size: 15),
+                                  SizedBox(width: 6),
+                                  Text('Settings'),
                                 ],
                               ),
                             ),
@@ -731,6 +575,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         );
                       },
                     ),
+
+                    // TAB 4: Settings & Preferences
+                    const SettingsTab(),
                   ],
                 ),
               );
@@ -893,32 +740,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                     OutlinedButton.icon(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const TajweedGuideScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.auto_awesome_rounded,
-                        size: 14,
-                        color: AppTheme.celestialStarlightBlue,
-                      ),
-                      label: const Text('Tajweed guide'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? AppTheme.celestialStarlightBlue : const Color(0xFF0284C7),
-                        side: BorderSide(
-                          color: isDark ? AppTheme.celestialStarlightBlue.withOpacity(0.6) : const Color(0xFF0284C7),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () {
                         final lastRead = context.read<BookmarkProvider>().lastReadBookmark;
                         final targetChapter = _allChapters.isNotEmpty
                             ? _allChapters.firstWhere(
@@ -953,25 +774,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         foregroundColor: AppTheme.getAccentGold(isDark),
                         side: BorderSide(
                           color: AppTheme.getAccentGold(isDark).withOpacity(0.7),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () => DataBackupSheet.show(context),
-                      icon: const Icon(
-                        Icons.cloud_sync_rounded,
-                        size: 14,
-                        color: Color(0xFF10B981),
-                      ),
-                      label: const Text('Backup & Restore'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? const Color(0xFF34D399) : const Color(0xFF047857),
-                        side: BorderSide(
-                          color: isDark ? const Color(0xFF34D399).withOpacity(0.6) : const Color(0xFF047857),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         shape: RoundedRectangleBorder(
