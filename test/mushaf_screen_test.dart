@@ -38,31 +38,35 @@ void main() {
     ),
   ];
 
-  Widget createMushafWidget() {
+  Widget createMushafWidget({BookmarkProvider? bProvider, int? initialVerseNumber}) {
     return MultiProvider(
+      key: UniqueKey(),
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => BookmarkProvider()),
+        ChangeNotifierProvider(create: (_) => bProvider ?? BookmarkProvider()),
       ],
       child: MaterialApp(
-        home: MushafScreen(chapter: testChapter, initialVerses: testVerses),
+        home: MushafScreen(
+          chapter: testChapter,
+          initialVerses: testVerses,
+          initialVerseNumber: initialVerseNumber,
+        ),
       ),
     );
   }
 
-  testWidgets('MushafScreen renders continuous scrollable single-page layout without overflow',
+  testWidgets('MushafScreen renders continuous scrollable single-card layout with full audio button',
       (WidgetTester tester) async {
     await tester.pumpWidget(createMushafWidget());
 
-    // Initially pumped
+    // Verify screen mounts
     expect(find.byType(MushafScreen), findsOneWidget);
 
-    // Verify AppBar contains title and Play All button
+    // Verify AppBar contains title and Play Full Surah button
     expect(find.text('Surah Al-Fatihah'), findsOneWidget);
     expect(find.byIcon(Icons.play_circle_fill_rounded), findsOneWidget);
     expect(find.byIcon(Icons.bookmarks_rounded), findsOneWidget);
     expect(find.byIcon(Icons.visibility_rounded), findsOneWidget);
-    expect(find.byIcon(Icons.download_for_offline_outlined), findsOneWidget);
 
     // Advance frame to complete FutureBuilder
     await tester.pump();
@@ -75,5 +79,34 @@ void main() {
     // Verify Surah header and Bismillah banner are rendered
     expect(find.text('سُورَةُ الفاتحة'), findsWidgets);
     expect(find.text('بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ'), findsOneWidget);
+
+    // Verify Full Audio recitation button is present
+    expect(find.text('Play Full Audio'), findsOneWidget);
+    expect(find.text('Mishary Rashid Alafasy'), findsOneWidget);
+
+    // Verify End of Surah seal is rendered
+    expect(find.textContaining('خَتْمُ سُورَةِ الفاتحة'), findsOneWidget);
+  });
+
+  testWidgets('MushafScreen bookmarking a verse syncs with BookmarkProvider across modes',
+      (WidgetTester tester) async {
+    final bProvider = BookmarkProvider();
+    await tester.pumpWidget(createMushafWidget(bProvider: bProvider, initialVerseNumber: 1));
+    await tester.pumpAndSettle();
+
+    // Initially verse 1:1 is not bookmarked
+    expect(bProvider.isBookmarked(1, 1), isFalse);
+
+    // Ayah Bookmark Bar should appear
+    expect(find.text('Ayah 1:1'), findsOneWidget);
+    expect(find.text('Bookmark'), findsOneWidget);
+
+    // Tap Bookmark button
+    await tester.tap(find.text('Bookmark'));
+    await tester.pumpAndSettle();
+
+    // Verify it is now bookmarked in BookmarkProvider (syncing with non-Mushaf mode)
+    expect(bProvider.isBookmarked(1, 1), isTrue);
+    expect(find.text('Bookmarked'), findsOneWidget);
   });
 }
